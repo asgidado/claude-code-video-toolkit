@@ -101,6 +101,10 @@
     "default": {
       "path": "brands/default/",
       "description": "Clean, professional brand with orange accent"
+    },
+    "digital-samba": {
+      "path": "brands/digital-samba/",
+      "description": "Digital Samba - European video conferencing platform"
     }
   },
 

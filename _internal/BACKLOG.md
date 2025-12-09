@@ -1,22 +1,19 @@
 # Toolkit Backlog
 
-Ideas and enhancements for the video creation toolkit. Items here are not yet scheduled - they're captured for future consideration.
+Ideas and enhancements for claude-code-video-toolkit. Items here are not yet scheduled - they're captured for future consideration.
+
+---
 
 ## Commands
 
-### `/generate-voiceover`
-Interactive voiceover generation:
-- Read script from VOICEOVER-SCRIPT.md or prompt for text
-- Use configured voice ID
-- Generate and save to project's public/audio/
-- Report duration for timing sync
-
-### `/record-demo`
-Guided Playwright recording:
-- Ask for URL, output name
-- Select viewport (1080p, 720p, mobile)
-- Run recording script
-- Output duration/frames for config
+### `/new-brand`
+Guided brand profile creation:
+- Ask for brand name
+- Option to mine colors/fonts from a URL (Playwright screenshot + color extraction)
+- Interactive color picker for manual entry
+- Logo upload guidance (where to place files)
+- Voice selection (list available ElevenLabs voices or use existing clone)
+- Generate `brand.json`, `voice.json`, create `assets/` folder
 
 ### `/convert-asset`
 FFmpeg helper command:
@@ -24,13 +21,14 @@ FFmpeg helper command:
 - Resize video
 - Compress for web
 - Extract audio
+- Trim video
 
 ### `/sync-timing`
 Timing calculator:
 - Analyze voiceover duration
 - Calculate demo segment timings
 - Suggest playbackRate adjustments
-- Update sprint-config.ts
+- Update sprint-config.ts automatically
 
 ### `/video-status`
 Project dashboard:
@@ -55,13 +53,44 @@ Automated web app exploration for demo planning:
 - Screenshot each discovered page
 - Output site map, suggested recording scripts, and asset manifest
 
+### `/new-skill`
+Guided skill creation for extending the toolkit:
+- Ask for skill name and description
+- Ask for trigger phrases (when should Claude use this skill?)
+- Create `SKILL.md` template with proper frontmatter
+- Optionally create `reference.md` for detailed docs
+- Register in `_internal/skills-registry.json`
+- Provide guidance on skill structure and best practices
+
+**Considerations:**
+- Skills live in `.claude/skills/` which is a Claude Code convention
+- Users may want video-related skills (new tools, services, techniques)
+- Or non-video skills that complement their workflow
+- Need clear documentation on SKILL.md format and frontmatter
+
+### `/new-template`
+Guided template creation:
+- Ask for template name and video type
+- Choose starting point (blank, copy existing, from project)
+- Set up directory structure with config files
+- Create placeholder components
+- Register in `_internal/skills-registry.json`
+
 ---
 
 ## Skills
 
+### Brand Mining Skill
+Extract brand identity from websites:
+- Screenshot capture
+- Dominant color extraction
+- Font detection (via CSS inspection)
+- Logo detection and download
+- Output as draft `brand.json`
+
 ### App Discovery Skill
 Playwright-based web app exploration and analysis:
-- **Crawling**: Discover pages within a domain, respect robots.txt
+- **Crawling**: Discover pages within a domain
 - **Element detection**: Find clickable elements, forms, navigation patterns
 - **Flow mapping**: Identify common user journeys (login, signup, CRUD)
 - **Screenshot capture**: Visual inventory of all discovered pages
@@ -70,12 +99,6 @@ Playwright-based web app exploration and analysis:
   - Mermaid site map / flow diagram
   - JSON structure of pages, elements, and actions
   - Recording script templates for each discovered flow
-  - Asset manifest for Remotion planning (page count, estimated durations)
-- **Use cases**:
-  - Plan demo sequences before recording
-  - Ensure complete feature coverage in sprint reviews
-  - Generate boilerplate recording scripts automatically
-  - Understand unfamiliar apps quickly
 
 ### Terminal Recording Skill
 - Asciinema recording and conversion
@@ -127,7 +150,7 @@ Extract from digital-samba-skill-demo:
 ## Infrastructure
 
 ### Shared Component Library
-Extract common components to workspace level:
+Extract common components to `components/` at workspace level:
 - AnimatedBackground
 - SlideTransition
 - Label
@@ -155,14 +178,20 @@ ElevenLabs usage monitoring:
 - Track music minutes
 - Monthly usage summary
 
+### Brand Loader Utility
+TypeScript utility for templates to load brands:
+- `loadBrand('digital-samba')` returns typed brand config
+- Merge with template defaults
+- Type-safe theme integration
+
 ---
 
 ## Improvements
 
 ### Voice Management
-- Store voice ID in workspace config vs hardcoded
 - Support multiple voices per project
-- Voice settings presets
+- Voice settings presets (narrator, character, etc.)
+- Voice preview before generation
 
 ### Playwright Enhancements
 - Auth state persistence between recordings
@@ -176,6 +205,11 @@ ElevenLabs usage monitoring:
 - Logo watermark component
 - Progress bar component
 
+### Brand System Enhancements
+- Brand inheritance (extend another brand)
+- Dark/light mode variants per brand
+- Brand preview command
+
 ---
 
 ## Documentation
@@ -184,3 +218,4 @@ ElevenLabs usage monitoring:
 - [ ] Skill creation guide
 - [ ] Template customization guide
 - [ ] Troubleshooting guide
+- [ ] Brand mining walkthrough

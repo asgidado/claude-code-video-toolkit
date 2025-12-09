@@ -1,6 +1,42 @@
 # Toolkit Changelog
 
-All notable changes to the video creation toolkit.
+All notable changes to claude-code-video-toolkit.
+
+## [0.3.0] - 2024-12-09
+
+### Added
+- **Open source release** - Published to GitHub at digitalsamba/claude-code-video-toolkit
+- **Brand profiles system** (`brands/`)
+  - `brand.json` for colors, fonts, typography
+  - `voice.json` for ElevenLabs voice settings
+  - `assets/` for logos and backgrounds
+  - Default brand profile included
+- **Documentation** (`docs/`)
+  - `getting-started.md` - First video walkthrough
+  - `creating-brands.md` - Brand profile guide
+  - `creating-templates.md` - Template creation guide
+- **Environment variable support**
+  - `ELEVENLABS_VOICE_ID` - Set voice ID via env var
+  - Falls back to `_internal/skills-registry.json` if not set
+- README.md, LICENSE (MIT), CONTRIBUTING.md
+- `.env.example` template
+
+### Changed
+- **Directory restructure for open source:**
+  - `templates/` - Video templates (moved from root)
+  - `projects/` - User video projects (moved from root)
+  - `brands/` - Brand profiles (new)
+  - `assets/` - Shared assets (consolidated)
+  - `_internal/` - Toolkit metadata (renamed from `_toolkit/`)
+- Updated `/new-sprint-video` command paths
+- `tools/config.py` reads from `_internal/` and supports env vars
+- CLAUDE.md updated for new structure
+
+### Fixed
+- Removed hardcoded voice ID from committed files
+- Proper `.gitignore` for secrets and build artifacts
+
+---
 
 ## [Unreleased]
 
@@ -12,13 +48,11 @@ All notable changes to the video creation toolkit.
 - FFmpeg skill (beta) - common video/audio conversion commands
 - Playwright recording skill (beta) - browser demo capture
 - Playwright infrastructure (`playwright/`) with recording scripts
-- Toolkit development tracking (`_toolkit/`)
 - Python tools: `voiceover.py`, `music.py`, `sfx.py`
-- Skills registry (`_toolkit/skills-registry.json`) for centralized config
+- Skills registry for centralized config
 
 ### Changed
-- Updated CLAUDE.md with new skills documentation
-- Playwright recordings now output at 30fps (matches Remotion)
+- Playwright recordings output at 30fps (matches Remotion)
 
 ### Fixed
 - FFmpeg trim command syntax (use `-to` not `-t` for end time)
@@ -30,7 +64,7 @@ All notable changes to the video creation toolkit.
 ## [0.2.0] - 2024-12-09
 
 ### Added
-- Sprint review template (`sprint-review-template/`)
+- Sprint review template (`templates/sprint-review/`)
   - Theme system with colors, fonts, spacing
   - Config-driven content via `sprint-config.ts`
   - Slide components: Title, Overview, Summary, EndCredits
@@ -38,7 +72,6 @@ All notable changes to the video creation toolkit.
   - NarratorPiP component for picture-in-picture narrator
   - Audio integration (voiceover, background music, SFX)
 - `/new-sprint-video` slash command for guided project creation
-- Narrator PiP support with configurable position and size
 
 ---
 
@@ -50,4 +83,3 @@ All notable changes to the video creation toolkit.
 - ElevenLabs skill documentation
 - First video project: sprint-review-cho-oyu
 - Voice cloning workflow with ElevenLabs
-- Basic generate_voiceover.py script

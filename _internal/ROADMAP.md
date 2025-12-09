@@ -1,21 +1,24 @@
 # Video Toolkit Roadmap
 
-This document tracks the development of the AI-assisted video creation toolkit.
+This document tracks the development of claude-code-video-toolkit.
 
 ## Vision
 
-An evolving, reusable toolkit for AI-assisted video creation using Remotion, with:
+An open-source, AI-native video production workspace for Claude Code, featuring:
 - Reusable templates for common video types
+- Brand profiles for consistent visual identity
 - Claude skills providing deep domain knowledge
 - Automated asset pipelines (recording, conversion, audio generation)
 - Slash commands for guided workflows
+
+**Repository:** https://github.com/digitalsamba/claude-code-video-toolkit
 
 ---
 
 ## Current Status
 
-**Phase:** 2 - Skills & Automation
-**Focus:** Building out skills and recording infrastructure
+**Phase:** 3 - Templates & Brands
+**Focus:** Extracting reusable templates, building brand system
 
 ---
 
@@ -27,53 +30,93 @@ An evolving, reusable toolkit for AI-assisted video creation using Remotion, wit
 - [x] Config-driven video content
 - [x] `/new-sprint-video` slash command
 - [x] Narrator PiP component
-- [x] Remotion skill (pre-existing)
-- [x] ElevenLabs skill (pre-existing)
+- [x] Remotion skill (stable)
+- [x] ElevenLabs skill (stable)
 
-### Phase 2: Skills & Automation 🔄 IN PROGRESS
+### Phase 2: Skills & Automation ✅ COMPLETE
 
 **Skills:**
-- [x] FFmpeg skill - common video/audio conversions (status: beta)
-- [x] Playwright recording skill - browser demo capture (status: beta)
-- [x] Review and validate FFmpeg skill → promoted to beta (2024-12-09)
-- [x] Review and validate Playwright skill → promoted to beta (2024-12-09)
-- [x] Test Playwright infrastructure with real recording
+- [x] FFmpeg skill (beta) - common video/audio conversions
+- [x] Playwright recording skill (beta) - browser demo capture
+- [x] Review and validate FFmpeg skill
+- [x] Review and validate Playwright skill
 
-**Python Tools (`tools/`):**
+**Python Tools:**
 - [x] `voiceover.py` - CLI for ElevenLabs TTS generation
 - [x] `music.py` - CLI for background music generation
 - [x] `sfx.py` - CLI for sound effects with presets
-- [x] `config.py` - Shared configuration (reads from skills-registry.json)
-- [x] `requirements.txt` - Python dependencies
+- [x] `config.py` - Shared configuration (env vars + registry fallback)
 
 **Commands:**
-- [x] `/generate-voiceover` - streamlined audio generation (created 2024-12-09)
-- [x] `/record-demo` - guided Playwright recording (created 2024-12-09, enhanced with stop button + scale)
-- [ ] `/video-status` - project dashboard
-
-**Reviews:**
-- [ ] Review sprint-review template & `/new-sprint-video` command
+- [x] `/generate-voiceover` - streamlined audio generation
+- [x] `/record-demo` - guided Playwright recording
+- [ ] `/video-status` - project dashboard (deferred to Phase 4)
 
 **Infrastructure:**
 - [x] Playwright recording setup (`playwright/`)
-- [x] Centralize voice ID in skills-registry.json (tools read from config)
-- [ ] Asset validation script (check all assets exist before render)
+- [x] Centralize voice ID (env var with registry fallback)
 
-### Phase 3: Templates & Components
+### Phase 2.5: Open Source Release ✅ COMPLETE
 
+- [x] Directory restructure for public release
+  - `templates/` - video templates
+  - `projects/` - user video projects
+  - `brands/` - brand profiles
+  - `docs/` - documentation
+  - `_internal/` - toolkit metadata (renamed from `_toolkit/`)
+- [x] Brand profiles system (`brands/default/`)
+  - `brand.json` - colors, fonts, typography
+  - `voice.json` - ElevenLabs voice settings
+  - `assets/` - logos, backgrounds
+- [x] Secrets audit and `.gitignore`
+- [x] Environment variable support (`ELEVENLABS_VOICE_ID`)
+- [x] README, LICENSE (MIT), CONTRIBUTING.md
+- [x] Documentation (`docs/getting-started.md`, `creating-brands.md`, `creating-templates.md`)
+- [x] GitHub repo: digitalsamba/claude-code-video-toolkit
+- [x] Initial commit and push
+
+### Phase 3: Templates & Brands 🔄 IN PROGRESS
+
+**Brand Profiles:**
+- [x] Default brand profile
+- [ ] Digital Samba brand profile (public example)
+  - [ ] Extract colors from digitalsamba.com
+  - [ ] Add DS logos to `brands/digital-samba/assets/`
+  - [ ] Configure voice settings
+- [ ] `/new-brand` command - guided brand creation
+  - [ ] Mine colors/fonts from URL
+  - [ ] Interactive color picker
+  - [ ] Logo upload guidance
+  - [ ] Voice selection
+
+**Templates:**
 - [ ] Product demo template (extract from digital-samba-skill-demo)
 - [ ] `/new-marketing-video` command
-- [ ] Shared component library (workspace-level reusable components)
+- [ ] Shared component library (workspace-level)
 - [ ] Tutorial template
 - [ ] Changelog/release notes template
 
+**Template-Brand Integration:**
+- [ ] Templates load brand from config
+- [ ] Brand override per-project
+
 ### Phase 4: Polish & Advanced
 
+**Commands:**
+- [ ] `/video-status` - project dashboard
+- [ ] `/convert-asset` - FFmpeg helper
+- [ ] `/sync-timing` - voiceover/demo timing calculator
+
+**Output & Accessibility:**
 - [ ] Multi-format output (MP4, WebM, GIF, social formats)
 - [ ] Subtitle generation from voiceover scripts
 - [ ] Thumbnail auto-generation
 - [ ] Pre-render validation command
+
+**Skills:**
 - [ ] Video accessibility skill
+- [ ] Terminal recording skill (asciinema)
+- [ ] Video timing skill
 
 ---
 
@@ -89,51 +132,43 @@ An evolving, reusable toolkit for AI-assisted video creation using Remotion, wit
 
 | Skill | Status | Notes |
 |-------|--------|-------|
-| remotion | stable | Pre-existing, well-tested |
-| elevenlabs | stable | Pre-existing, well-tested |
-| ffmpeg | beta | Reviewed 2024-12-09, trim fix applied |
-| playwright-recording | beta | Reviewed 2024-12-09, frame rate + nav fixes |
+| remotion | stable | Core framework knowledge |
+| elevenlabs | stable | Audio generation |
+| ffmpeg | beta | Asset conversion |
+| playwright-recording | beta | Browser demo capture |
 
 ---
 
 ## Review Process
 
-For new skills to progress:
+**draft → beta:**
+- Verify code examples work
+- Test core functionality
+- Document issues in `_internal/reviews/`
+- Fix critical issues
 
-1. **draft → beta**
-   - Verify all code examples compile/run
-   - Test core functionality manually
-   - Document any issues in `_toolkit/reviews/`
-   - Fix critical issues
-
-2. **beta → stable**
-   - Use skill in a real project
-   - Gather feedback on gaps/improvements
-   - Complete documentation
-   - No known critical issues
+**beta → stable:**
+- Use in a real project
+- Gather feedback
+- Complete documentation
+- No known critical issues
 
 ---
 
-## Metrics & Goals
+## Metrics
 
-**Template Usage:**
-- Sprint review template: Used in 1 project (cho-oyu)
-
-**Skills Created:** 4 (2 stable, 2 beta)
-
-**Tools Created:** 3 (`voiceover.py`, `music.py`, `sfx.py`)
-
-**Commands Created:** 3 (`/new-sprint-video`, `/record-demo`, `/generate-voiceover`)
+**Templates:** 1 (sprint-review)
+**Brands:** 1 (default) + 1 planned (digital-samba)
+**Skills:** 4 (2 stable, 2 beta)
+**Tools:** 3 (voiceover, music, sfx)
+**Commands:** 3 (new-sprint-video, record-demo, generate-voiceover)
+**Example Projects:** 2 (sprint-review-cho-oyu, digital-samba-skill-demo)
 
 ---
 
 ## Next Actions
 
-1. ~~Review ffmpeg skill - verify examples work~~ ✅
-2. ~~Review playwright skill - verify examples work~~ ✅
-3. ~~Test playwright recording with a real demo~~ ✅
-4. ~~Create `/record-demo` command~~ ✅
-5. ~~Create `/generate-voiceover` command~~ ✅
-6. Test `/generate-voiceover` command (restart Claude Code first)
-7. Review sprint-review template & `/new-sprint-video` command
-8. Create `/video-status` command
+1. Create Digital Samba brand profile
+2. Design `/new-brand` command
+3. Extract product demo template from digital-samba-skill-demo
+4. Review sprint-review template for brand integration
