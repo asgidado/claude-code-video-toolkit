@@ -98,6 +98,7 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 - [x] Shared component library (`lib/`) ⭐
   - [x] Theme system (`lib/theme/`) - ThemeProvider, useTheme, types
   - [x] Core components (`lib/components/`) - AnimatedBackground, SlideTransition, Label, Vignette, LogoWatermark, SplitScreen
+  - [x] Animation components - Envelope (3D opening animation), PointingHand (directional pointer with pulse)
   - [x] NarratorPiP (needs refinement - different APIs in templates)
   - [x] Templates updated to import from lib
 - [ ] Tutorial template
@@ -187,7 +188,7 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 **Skills:** 4 (2 stable, 2 beta)
 **Tools:** 3 (voiceover, music, sfx)
 **Commands:** 7 (video, brand, template, skill, contribute, record-demo, generate-voiceover)
-**Shared Components:** 7 (AnimatedBackground, SlideTransition, Label, Vignette, LogoWatermark, SplitScreen, NarratorPiP)
+**Shared Components:** 9 (AnimatedBackground, SlideTransition, Label, Vignette, LogoWatermark, SplitScreen, NarratorPiP, Envelope, PointingHand)
 **Examples:** 2 with finished video links (digital-samba-skill-demo, sprint-review-cho-oyu)
 
 ---
@@ -195,11 +196,24 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 ## Next Actions
 
 1. **Upload example videos to YouTube** (optional, for discoverability)
-2. **Test `/video` workflow end-to-end**
-   - Test new project creation with scene-centric flow
-   - Test project resumption (multi-session)
-   - Verify filesystem reconciliation
-   - Verify CLAUDE.md auto-generation
+2. **Test `/video` workflow end-to-end** (in progress)
+   - [x] Test new project creation with scene-centric flow
+   - [ ] Test project resumption (multi-session)
+   - [ ] Verify filesystem reconciliation
+   - [x] Verify CLAUDE.md auto-generation
+   - [x] Fixed recording script issues (control panel in video, navigation stopping, cookie banners)
+   - [x] Updated playwright-recording skill with learnings
 3. Document narrator video creation workflow (see BACKLOG.md)
 4. Create tutorial template
 5. Promote ffmpeg and playwright-recording skills to stable after testing
+
+## In Progress
+
+**Video Project:** `projects/digital-samba-free-intro/`
+- Product demo for Digital Samba Free
+- Signup demo recorded (26s)
+- Email confirmation scene added (envelope + pointing hand animation)
+- Dashboard tour pending
+- Then voiceover generation
+
+**Backlog item:** `/components` command for browsing reusable animation components (see BACKLOG.md)

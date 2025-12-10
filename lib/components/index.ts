@@ -31,6 +31,13 @@ export type { SplitScreenProps } from './SplitScreen';
 export { NarratorPiP } from './NarratorPiP';
 export type { NarratorPiPProps } from './NarratorPiP';
 
+// Animations
+export { Envelope } from './Envelope';
+export type { EnvelopeProps } from './Envelope';
+
+export { PointingHand } from './PointingHand';
+export type { PointingHandProps } from './PointingHand';
+
 // Utilities
 export { hexToRgba, SIZE_PRESETS, POSITION_PRESETS } from './utils';
 export type { SizePreset, PositionPreset } from './utils';

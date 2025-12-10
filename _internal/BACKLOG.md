@@ -54,6 +54,56 @@ Meta command for toolkit development:
 - Show recent changes
 - List backlog items
 
+### `/review` ⭐ NEW
+Interactive scene-by-scene review and enhancement workflow:
+- **Scene walkthrough**: Step through each scene with preview timestamps
+- **Quality checks**: Verify timing, transitions, audio sync, visual consistency
+- **Enhancement suggestions**: AI-powered recommendations for each scene
+  - Animation improvements (add effects, adjust timing)
+  - Visual polish (better transitions, color grading)
+  - Audio balance (voiceover levels, music timing)
+  - Pacing feedback (too fast/slow, awkward cuts)
+- **Side-by-side comparison**: Compare current vs suggested improvements
+- **Apply suggestions**: One-click to implement recommended changes
+- **Export review notes**: Generate markdown summary for team feedback
+
+**Example workflow:**
+```
+/review                    # Start review of current project
+/review --scene 3          # Jump to specific scene
+/review --focus timing     # Focus on timing issues
+/review --export           # Export review notes
+```
+
+**Review checklist per scene:**
+- [ ] Duration feels right for content
+- [ ] Transitions are smooth
+- [ ] Audio syncs with visuals
+- [ ] Text is readable (size, duration)
+- [ ] Animations enhance not distract
+- [ ] Brand consistency maintained
+
+### `/components` ⭐ NEW
+Browse, preview, and manage reusable animation components:
+- **List mode**: Show all components in `lib/components/` with descriptions
+- **View mode**: Display component props, usage examples, and preview instructions
+- **Categories**: Backgrounds, Overlays, Animations, Layouts, Transitions
+- **Preview**: Generate a quick Remotion preview of a specific component
+- **Add mode**: Create new component from template or extract from project
+
+**Example usage:**
+```
+/components              # List all components
+/components Envelope     # View Envelope component details
+/components --category animations  # List animation components
+```
+
+**Component documentation format:**
+Each component should have:
+- JSDoc with `@example` showing usage
+- Props interface with descriptions
+- Category tag for filtering
+
 ### `/discover-app`
 Automated web app exploration for demo planning:
 - Crawl all links from a starting URL
@@ -145,6 +195,8 @@ Extracted to `templates/product-demo/`:
 
 ### Shared Component Library ✅ IMPLEMENTED
 Extracted to `lib/components/`:
+
+**Core:**
 - AnimatedBackground (floating shapes, grid lines, gradient overlays)
 - SlideTransition (fade, slide, zoom transitions)
 - Label (floating label badges with JIRA refs)
@@ -153,8 +205,14 @@ Extracted to `lib/components/`:
 - Vignette (cinematic edge darkening)
 - LogoWatermark (corner logo branding)
 
+**Animations:**
+- Envelope (3D envelope with opening flap animation, configurable message)
+- PointingHand (animated hand emoji, slides in from direction, pulse effect)
+
 **Still needed:**
 - CodeHighlight (syntax-highlighted code blocks)
+- ClickRipple (mouse click effect for demos)
+- TypeWriter (animated text typing effect)
 
 ### NarratorPiP API Refinement ⭐ NEEDS WORK
 The NarratorPiP component has two different APIs:
