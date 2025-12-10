@@ -1,0 +1,218 @@
+{
+  "name": "claude-code-video-toolkit",
+  "version": "0.3.0",
+  "description": "AI-native video production workspace for Claude Code",
+  "repository": "https://github.com/digitalsamba/claude-code-video-toolkit",
+
+  "skills": {
+    "remotion": {
+      "path": ".claude/skills/remotion/",
+      "description": "Remotion video framework - compositions, animations, media",
+      "status": "stable",
+      "created": "2025-12-04",
+      "updated": "2025-12-04"
+    },
+    "elevenlabs": {
+      "path": ".claude/skills/elevenlabs/",
+      "description": "ElevenLabs audio - TTS, voice cloning, music, SFX",
+      "status": "stable",
+      "created": "2025-12-04",
+      "updated": "2025-12-04"
+    },
+    "ffmpeg": {
+      "path": ".claude/skills/ffmpeg/",
+      "description": "FFmpeg video/audio processing for Remotion assets",
+      "status": "beta",
+      "created": "2025-12-08",
+      "updated": "2025-12-09"
+    },
+    "playwright-recording": {
+      "path": ".claude/skills/playwright-recording/",
+      "description": "Playwright browser recording for demo videos",
+      "status": "beta",
+      "created": "2025-12-08",
+      "updated": "2025-12-10"
+    }
+  },
+
+  "commands": {
+    "video": {
+      "path": ".claude/commands/video.md",
+      "description": "Video projects - list, resume, or create new",
+      "status": "stable",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "brand": {
+      "path": ".claude/commands/brand.md",
+      "description": "Brand profiles - list, edit, or create new",
+      "status": "stable",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "template": {
+      "path": ".claude/commands/template.md",
+      "description": "List available templates and their features",
+      "status": "stable",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "skills": {
+      "path": ".claude/commands/skills.md",
+      "description": "List installed skills or create new ones",
+      "status": "stable",
+      "created": "2025-12-10",
+      "updated": "2025-12-10"
+    },
+    "record-demo": {
+      "path": ".claude/commands/record-demo.md",
+      "description": "Guided Playwright recording with interactive or script mode",
+      "status": "stable",
+      "created": "2025-12-08",
+      "updated": "2025-12-10"
+    },
+    "generate-voiceover": {
+      "path": ".claude/commands/generate-voiceover.md",
+      "description": "Generate TTS voiceover using ElevenLabs",
+      "status": "stable",
+      "created": "2025-12-08",
+      "updated": "2025-12-09"
+    },
+    "contribute": {
+      "path": ".claude/commands/contribute.md",
+      "description": "Share improvements - issues, PRs, skills, templates",
+      "status": "stable",
+      "created": "2025-12-10",
+      "updated": "2025-12-10"
+    }
+  },
+
+  "tools": {
+    "voiceover": {
+      "path": "tools/voiceover.py",
+      "description": "Generate TTS voiceovers using ElevenLabs",
+      "usage": "python tools/voiceover.py --script SCRIPT.md --output out.mp3",
+      "status": "stable",
+      "created": "2025-12-08",
+      "updated": "2025-12-08"
+    },
+    "music": {
+      "path": "tools/music.py",
+      "description": "Generate background music using ElevenLabs",
+      "usage": "python tools/music.py --prompt 'description' --duration 120 --output music.mp3",
+      "status": "stable",
+      "created": "2025-12-08",
+      "updated": "2025-12-08"
+    },
+    "sfx": {
+      "path": "tools/sfx.py",
+      "description": "Generate sound effects using ElevenLabs",
+      "usage": "python tools/sfx.py --preset whoosh --output sfx.mp3",
+      "status": "stable",
+      "created": "2025-12-08",
+      "updated": "2025-12-08"
+    }
+  },
+
+  "templates": {
+    "sprint-review": {
+      "path": "templates/sprint-review/",
+      "description": "Sprint review videos with demos, stats, and voiceover",
+      "status": "stable",
+      "created": "2025-12-04",
+      "updated": "2025-12-09"
+    },
+    "product-demo": {
+      "path": "templates/product-demo/",
+      "description": "Marketing videos with dark tech aesthetic, stats, CTA",
+      "status": "stable",
+      "created": "2025-12-09",
+      "updated": "2025-12-10"
+    }
+  },
+
+  "components": {
+    "AnimatedBackground": {
+      "path": "lib/components/AnimatedBackground.tsx",
+      "description": "Floating shapes background with variants (subtle, tech, warm, dark)",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "SlideTransition": {
+      "path": "lib/components/SlideTransition.tsx",
+      "description": "Scene transitions (fade, zoom, slide-up, blur-fade)",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "Label": {
+      "path": "lib/components/Label.tsx",
+      "description": "Floating label badge with optional JIRA reference",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "Vignette": {
+      "path": "lib/components/Vignette.tsx",
+      "description": "Cinematic edge darkening overlay",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "LogoWatermark": {
+      "path": "lib/components/LogoWatermark.tsx",
+      "description": "Corner logo branding overlay",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "SplitScreen": {
+      "path": "lib/components/SplitScreen.tsx",
+      "description": "Side-by-side video comparison layout",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "NarratorPiP": {
+      "path": "lib/components/NarratorPiP.tsx",
+      "description": "Picture-in-picture presenter overlay",
+      "status": "needs-refinement",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    },
+    "Envelope": {
+      "path": "lib/components/Envelope.tsx",
+      "description": "3D envelope with opening flap animation",
+      "created": "2025-12-10",
+      "updated": "2025-12-10"
+    },
+    "PointingHand": {
+      "path": "lib/components/PointingHand.tsx",
+      "description": "Animated hand emoji with directional slide-in and pulse",
+      "created": "2025-12-10",
+      "updated": "2025-12-10"
+    }
+  },
+
+  "brands": {
+    "default": {
+      "path": "brands/default/",
+      "description": "Clean, professional brand with orange accent",
+      "created": "2025-12-08",
+      "updated": "2025-12-08"
+    },
+    "digital-samba": {
+      "path": "brands/digital-samba/",
+      "description": "Digital Samba - European video conferencing platform",
+      "created": "2025-12-09",
+      "updated": "2025-12-09"
+    }
+  },
+
+  "config": {
+    "voiceId": "YOUR_VOICE_ID_HERE",
+    "defaultFps": 30,
+    "defaultResolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "projectsDir": "projects/",
+    "templatesDir": "templates/",
+    "brandsDir": "brands/"
+  }
+}

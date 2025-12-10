@@ -3,7 +3,7 @@
 **Skill:** ffmpeg
 **Status:** draft → beta
 **Reviewer:** Claude
-**Date:** 2024-12-09
+**Date:** 2025-12-09
 
 ## Review Checklist
 
@@ -85,7 +85,7 @@ ffmpeg -i input.mp4 -filter_complex "[0:v]setpts=0.5*PTS[v];[0:a]atempo=2.0[a]" 
 
 ## Updates
 
-### 2024-12-09: Added Video Speed Adjustment Section
+### 2025-12-09: Added Video Speed Adjustment Section
 
 Added comprehensive "Video Speed Adjustment for Remotion" section covering:
 - When to use FFmpeg vs Remotion's `playbackRate` prop

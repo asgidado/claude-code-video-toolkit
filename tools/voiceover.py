@@ -59,7 +59,7 @@ Examples:
         "--voice-id",
         "-v",
         type=str,
-        help="ElevenLabs voice ID (uses default from skills-registry.json if not provided)",
+        help="ElevenLabs voice ID (uses default from toolkit-registry.json if not provided)",
     )
     parser.add_argument(
         "--model",
@@ -157,7 +157,7 @@ def main():
     voice_id = args.voice_id or get_voice_id()
     if not voice_id:
         print(
-            "Error: No voice ID provided and none found in skills-registry.json",
+            "Error: No voice ID provided and none found in toolkit-registry.json",
             file=sys.stderr,
         )
         sys.exit(1)

@@ -121,12 +121,13 @@ Before gathering configuration, check if we're in a project context:
 
 ## Tips to Share with User
 
-- **Stopping**: Press `Esc` key, click the Stop button, or `Ctrl+C` in terminal
-- **Interactive mode**: The browser will open with a floating control panel showing elapsed time. Perform your actions naturally.
+- **Stopping**: Press `Esc` key in the browser window, or `Ctrl+C` in terminal
+- **Interactive mode**: The browser will open and start recording immediately. Perform your actions naturally. Recording continues across page navigations.
 - **Script mode**: Edit the generated file to add your click/fill/scroll actions, then run it as many times as needed for a clean take.
 - **Debugging**: If the recording doesn't look right, re-run with `DEBUG=true` prefix to see the browser in script mode.
 - **Cursor**: The orange cursor dot and click ripples are automatically added.
 - **Scale**: Default 75% scale fits laptop screens while still recording at full 1080p resolution.
+- **Cookie banners**: Common cookie consent popups are automatically dismissed.
 
 ---
 

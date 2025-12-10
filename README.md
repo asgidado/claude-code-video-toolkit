@@ -83,7 +83,7 @@ Claude Code has deep knowledge in:
 | `/video` | Video projects — list, resume, or create new |
 | `/brand` | Brand profiles — list, edit, or create new |
 | `/template` | List available templates and their features |
-| `/skill` | List installed skills or create new ones |
+| `/skills` | List installed skills or create new ones |
 | `/contribute` | Share improvements — issues, PRs, examples |
 | `/record-demo` | Record browser interactions with Playwright |
 | `/generate-voiceover` | Generate AI voiceover from a script |
@@ -138,7 +138,10 @@ claude-code-video-toolkit/
 ├── .claude/
 │   ├── skills/          # Domain knowledge for Claude
 │   └── commands/        # Slash commands (/video, /brand, etc.)
-├── lib/                 # Shared utilities and project system
+├── lib/                 # Shared components, theme system, utilities
+│   ├── components/      # Reusable video components (9 components)
+│   ├── theme/           # ThemeProvider, useTheme
+│   └── project/         # Multi-session project system
 ├── tools/               # Python CLI tools
 ├── templates/           # Video templates
 ├── brands/              # Brand profiles

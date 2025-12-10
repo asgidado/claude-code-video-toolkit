@@ -42,7 +42,7 @@ Thank you for your interest in contributing! This toolkit is designed to help pe
 1. Create a new folder in `templates/`
 2. Include a working Remotion project
 3. Add a `README.md` explaining the template
-4. Register it in `_internal/skills-registry.json`
+4. Register it in `_internal/toolkit-registry.json`
 5. Test with `npm run studio` and `npm run render`
 
 ## Adding a New Skill
@@ -50,14 +50,14 @@ Thank you for your interest in contributing! This toolkit is designed to help pe
 1. Create a folder in `.claude/skills/`
 2. Add `SKILL.md` with the skill definition
 3. Optionally add `reference.md` for detailed docs
-4. Register it in `_internal/skills-registry.json`
+4. Register it in `_internal/toolkit-registry.json`
 5. Test by asking Claude Code questions about the domain
 
 ## Adding a New Command
 
 1. Create a markdown file in `.claude/commands/`
 2. Follow the existing command format
-3. Register it in `_internal/skills-registry.json`
+3. Register it in `_internal/toolkit-registry.json`
 4. Test by running the command in Claude Code
 
 ## Code Style

@@ -154,6 +154,8 @@ Target: `github.com/digitalsamba/claude-code-video-toolkit`
 
 | Date | Change | Area |
 |------|--------|------|
-| 2024-12-10 | Added evolution narrative to commands | commands |
-| 2024-12-10 | Created FEEDBACK.md | meta |
+| 2025-12-10 | Added evolution narrative to commands | commands |
+| 2025-12-10 | Created FEEDBACK.md | meta |
+| 2025-12-10 | Documentation review and cleanup | docs |
+| 2025-12-10 | Renamed skills-registry.json → toolkit-registry.json | meta |
 

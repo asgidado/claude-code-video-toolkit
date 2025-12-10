@@ -140,13 +140,15 @@ To make a template available to others:
 
 1. Ensure it works standalone (`npm install && npm run studio`)
 2. Document the config schema
-3. Add to `_internal/skills-registry.json`:
+3. Add to `_internal/toolkit-registry.json`:
    ```json
    "templates": {
      "my-template": {
-       "status": "beta",
        "path": "templates/my-template/",
-       "description": "What this template is for"
+       "description": "What this template is for",
+       "status": "beta",
+       "created": "2025-12-10",
+       "updated": "2025-12-10"
      }
    }
    ```

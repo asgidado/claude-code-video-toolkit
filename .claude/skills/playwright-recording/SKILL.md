@@ -360,6 +360,89 @@ Playwright outputs WebM. Convert for better Remotion compatibility:
 ffmpeg -i recording.webm -c:v libx264 -crf 20 -preset medium -movflags faststart public/demos/demo.mp4
 ```
 
+## Interactive Recording
+
+For user-driven recordings where you manually perform actions:
+
+```typescript
+// Inject ESC key listener to stop recording
+async function injectStopListener(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    if ((window as any).__escListenerAdded) return;
+    (window as any).__escListenerAdded = true;
+    (window as any).__stopRecording = false;
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        (window as any).__stopRecording = true;
+      }
+    });
+  });
+}
+
+// Poll for stop signal - handle navigation errors gracefully
+while (!stopped) {
+  try {
+    const shouldStop = await page.evaluate(() => (window as any).__stopRecording === true);
+    if (shouldStop) break;
+  } catch {
+    // Page navigating - continue recording
+  }
+  await new Promise(r => setTimeout(r, 200));
+}
+```
+
+**Key insight:** `page.evaluate()` throws during navigation. Use try/catch and continue - don't treat errors as stop signals.
+
+## Window Scaling for Laptops
+
+Record at full 1080p while showing a smaller window:
+
+```typescript
+const scale = 0.75; // 75% window size
+const context = await browser.newContext({
+  viewport: { width: 1920 * scale, height: 1080 * scale },
+  deviceScaleFactor: 1 / scale,
+  recordVideo: { dir: './recordings', size: { width: 1920, height: 1080 } },
+});
+```
+
+## Cookie Banner Dismissal
+
+Comprehensive selector list for common consent platforms:
+
+```typescript
+const COOKIE_SELECTORS = [
+  '#onetrust-accept-btn-handler',           // OneTrust
+  '#CybotCookiebotDialogBodyButtonAccept',  // Cookiebot
+  '.cc-btn.cc-dismiss',                      // Cookie Consent by Insites
+  '[class*="cookie"] button[class*="accept"]',
+  '[class*="consent"] button[class*="accept"]',
+  'button:has-text("Accept all")',
+  'button:has-text("Accept cookies")',
+  'button:has-text("Got it")',
+];
+
+async function dismissCookieBanners(page: Page): Promise<void> {
+  await page.waitForTimeout(500);
+  for (const selector of COOKIE_SELECTORS) {
+    try {
+      const btn = page.locator(selector).first();
+      if (await btn.isVisible({ timeout: 100 })) {
+        await btn.click({ timeout: 500 });
+        return;
+      }
+    } catch { /* try next */ }
+  }
+}
+```
+
+Call after `page.goto()` and on `page.on('load')` for navigation.
+
+## Important: Injected Elements Appear in Video
+
+**Warning:** Any DOM elements you inject (cursors, control panels, overlays) will be recorded. For UI-free recordings, use terminal-based controls only (Ctrl+C, max duration timer).
+
 ## Tips for Good Demo Recordings
 
 1. **Use slowMo** - 50-100ms makes actions visible
@@ -368,8 +451,8 @@ ffmpeg -i recording.webm -c:v libx264 -crf 20 -preset medium -movflags faststart
 4. **Match Remotion dimensions** - 1920x1080 at 30fps typical
 5. **Test without recording first** - Debug before final capture
 6. **Clear browser state** - Use fresh context for clean demos
-7. **Hide cookie banners** - Dismiss or inject CSS to hide
-8. **Use consistent data** - Pre-fill forms with realistic placeholder data
+7. **Dismiss cookie banners** - Use comprehensive selector list above
+8. **Re-inject on navigation** - Cursor/listeners reset on page load
 
 ---
 

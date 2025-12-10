@@ -3,7 +3,7 @@
 **Skill:** playwright-recording
 **Status:** draft → beta (fixes applied)
 **Reviewer:** Claude
-**Date:** 2024-12-09
+**Date:** 2025-12-09
 
 ## Executive Summary
 
@@ -245,5 +245,5 @@ The `/record-demo` command in the backlog would wrap all this complexity:
 
 1. Apply Phase A fixes to promote to beta
 2. Re-run test recording to verify frame rate fix
-3. Update skills-registry.json status after fixes applied
+3. Update toolkit-registry.json status after fixes applied
 4. Consider implementing `/record-demo` slash command

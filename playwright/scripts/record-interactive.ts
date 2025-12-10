@@ -2,7 +2,7 @@
  * Interactive browser recording script
  *
  * Opens a visible browser window and records your manual actions.
- * Press Escape, click Stop button, or Ctrl+C to stop recording.
+ * Press Escape in the browser or Ctrl+C in terminal to stop recording.
  *
  * Usage:
  *   npx tsx scripts/record-interactive.ts --url "https://example.com" --name "my-demo"
@@ -16,6 +16,7 @@
  *               Records at full resolution but shows smaller window.
  *   --slowMo    Delay between actions in ms (default: 50)
  *   --duration  Max recording duration in seconds (default: 120)
+ *   --cursor    Show cursor visualization: true/false (default: true)
  */
 
 import { chromium, Browser, BrowserContext, Page } from 'playwright';
@@ -32,6 +33,7 @@ function parseArgs(): {
   scale: number;
   slowMo: number;
   duration: number;
+  showCursor: boolean;
 } {
   const args = process.argv.slice(2);
   const parsed: Record<string, string> = {};
@@ -70,13 +72,91 @@ function parseArgs(): {
     scale,
     slowMo: parseInt(parsed.slowMo || '50', 10),
     duration: parseInt(parsed.duration || '120', 10),
+    showCursor: parsed.cursor !== 'false',
   };
 }
 
 const config = parseArgs();
 const targetFps = 30;
 
+// Common cookie consent selectors to auto-dismiss
+const COOKIE_BANNER_SELECTORS = [
+  // Generic patterns
+  '[class*="cookie-consent"] button[class*="accept"]',
+  '[class*="cookie-banner"] button[class*="accept"]',
+  '[class*="cookie"] button[class*="accept"]',
+  '[class*="consent"] button[class*="accept"]',
+  '[id*="cookie"] button[class*="accept"]',
+  '[id*="consent"] button[class*="accept"]',
+  // Common cookie consent platforms
+  '#onetrust-accept-btn-handler', // OneTrust
+  '.onetrust-close-btn-handler',
+  '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll', // Cookiebot
+  '#CybotCookiebotDialogBodyButtonAccept',
+  '.cc-btn.cc-dismiss', // Cookie Consent by Insites
+  '.cc-accept-all',
+  '#accept-cookies',
+  '#acceptCookies',
+  '.accept-cookies',
+  '.acceptCookies',
+  '[data-testid="cookie-policy-dialog-accept-button"]',
+  '[data-testid="accept-cookies"]',
+  'button[aria-label*="Accept"]',
+  'button[aria-label*="accept"]',
+  // GDPR specific
+  '.gdpr-accept',
+  '#gdpr-accept',
+  '[class*="gdpr"] button[class*="accept"]',
+  // Generic button text matches (last resort)
+  'button:has-text("Accept all")',
+  'button:has-text("Accept All")',
+  'button:has-text("Accept cookies")',
+  'button:has-text("Accept Cookies")',
+  'button:has-text("I accept")',
+  'button:has-text("Got it")',
+  'button:has-text("OK")',
+  'button:has-text("Agree")',
+];
+
+async function dismissCookieBanners(page: Page): Promise<void> {
+  // Wait a moment for cookie banners to appear
+  await page.waitForTimeout(500);
+
+  for (const selector of COOKIE_BANNER_SELECTORS) {
+    try {
+      const button = page.locator(selector).first();
+      if (await button.isVisible({ timeout: 100 })) {
+        await button.click({ timeout: 500 });
+        console.log(`   🍪 Dismissed cookie banner`);
+        // Wait for banner to disappear
+        await page.waitForTimeout(300);
+        return;
+      }
+    } catch {
+      // Selector not found or not clickable, try next
+    }
+  }
+}
+
+async function injectStopListener(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    // Prevent duplicate injection
+    if ((window as any).__escListenerAdded) return;
+    (window as any).__escListenerAdded = true;
+    (window as any).__stopRecording = false;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        (window as any).__stopRecording = true;
+      }
+    });
+  });
+}
+
 async function injectCursorVisualization(page: Page): Promise<void> {
+  if (!config.showCursor) return;
+
   await page.addStyleTag({
     content: `
       .playwright-cursor {
@@ -113,73 +193,13 @@ async function injectCursorVisualization(page: Page): Promise<void> {
           opacity: 0;
         }
       }
-      .recording-control-panel {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 999999;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(0, 0, 0, 0.85);
-        padding: 10px 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      }
-      .recording-indicator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #fff;
-        font-size: 13px;
-        font-weight: 500;
-      }
-      .recording-dot {
-        width: 10px;
-        height: 10px;
-        background: #ef4444;
-        border-radius: 50%;
-        animation: pulse 1.5s ease-in-out infinite;
-      }
-      @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.6; transform: scale(0.9); }
-      }
-      .recording-timer {
-        font-variant-numeric: tabular-nums;
-        color: #a1a1aa;
-        font-size: 13px;
-        min-width: 45px;
-      }
-      .stop-recording-btn {
-        background: #dc2626;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: background 0.15s ease;
-      }
-      .stop-recording-btn:hover {
-        background: #b91c1c;
-      }
-      .stop-recording-btn .shortcut {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 500;
-      }
     `
   });
 
   await page.evaluate(() => {
+    // Prevent duplicate injection
+    if (document.querySelector('.playwright-cursor')) return;
+
     const cursor = document.createElement('div');
     cursor.className = 'playwright-cursor';
     document.body.appendChild(cursor);
@@ -206,65 +226,6 @@ async function injectCursorVisualization(page: Page): Promise<void> {
   });
 }
 
-async function injectRecordingControls(page: Page, maxDuration: number): Promise<void> {
-  // Use addScriptTag with raw JS to avoid tsx transpiler issues
-  await page.addScriptTag({
-    content: `
-      (function() {
-        // Prevent duplicate injection
-        if (document.querySelector('.recording-control-panel')) return;
-
-        const maxDur = ${maxDuration};
-
-        // Create control panel
-        const panel = document.createElement('div');
-        panel.className = 'recording-control-panel';
-        panel.innerHTML = \`
-          <div class="recording-indicator">
-            <div class="recording-dot"></div>
-            <span>REC</span>
-          </div>
-          <div class="recording-timer">0:00</div>
-          <button class="stop-recording-btn">
-            Stop <span class="shortcut">Esc</span>
-          </button>
-        \`;
-        document.body.appendChild(panel);
-
-        // Timer update
-        const timerEl = panel.querySelector('.recording-timer');
-        const startTime = Date.now();
-
-        setInterval(function() {
-          const elapsed = Math.floor((Date.now() - startTime) / 1000);
-          const mins = Math.floor(elapsed / 60);
-          const secs = elapsed % 60;
-          timerEl.textContent = mins + ':' + secs.toString().padStart(2, '0');
-
-          // Flash warning when approaching max duration
-          if (elapsed >= maxDur - 10) {
-            timerEl.style.color = '#ef4444';
-          }
-        }, 1000);
-
-        // Stop button click
-        const stopBtn = panel.querySelector('.stop-recording-btn');
-        stopBtn.addEventListener('click', function() {
-          window.__stopRecording = true;
-        });
-
-        // Escape key to stop
-        document.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            window.__stopRecording = true;
-          }
-        });
-      })();
-    `
-  });
-}
-
 function getVideoDuration(filePath: string): number {
   try {
     const output = execSync(
@@ -275,6 +236,23 @@ function getVideoDuration(filePath: string): number {
   } catch {
     return 0;
   }
+}
+
+// Terminal-based timer display (not in browser)
+function startTerminalTimer(duration: number): NodeJS.Timeout {
+  const startTime = Date.now();
+
+  return setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    const remaining = duration - elapsed;
+
+    // Use carriage return to update in place
+    const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+    const remainingStr = remaining <= 10 ? ` (${remaining}s remaining)` : '';
+    process.stdout.write(`\r   ⏱ Recording: ${timeStr}${remainingStr}    `);
+  }, 1000);
 }
 
 async function record(): Promise<void> {
@@ -290,8 +268,9 @@ async function record(): Promise<void> {
     console.log(`   Window: ${windowWidth}x${windowHeight} (scaled to ${Math.round(config.scale * 100)}%)`);
   }
   console.log(`   Max duration: ${config.duration}s`);
+  console.log(`   Cursor: ${config.showCursor ? 'visible' : 'hidden'}`);
   console.log(`\n📍 Browser will open. Perform your actions.`);
-  console.log(`   To stop: Press Esc, click Stop button, or Ctrl+C\n`);
+  console.log(`   To stop: Press Esc in the browser, or Ctrl+C in terminal\n`);
 
   const browser: Browser = await chromium.launch({
     slowMo: config.slowMo,
@@ -302,8 +281,6 @@ async function record(): Promise<void> {
   fs.mkdirSync(tempDir, { recursive: true });
 
   // Use deviceScaleFactor to show smaller window while recording at full resolution
-  // deviceScaleFactor > 1 means: render more pixels in the same viewport
-  // Combined with a smaller recordVideo size, we get full-res recording in a smaller window
   const deviceScaleFactor = 1 / config.scale;
 
   const context: BrowserContext = await browser.newContext({
@@ -322,9 +299,12 @@ async function record(): Promise<void> {
 
   // Handle graceful shutdown on Ctrl+C
   let stopped = false;
+  let timer: NodeJS.Timeout | null = null;
+
   const cleanup = async () => {
     if (stopped) return;
     stopped = true;
+    if (timer) clearInterval(timer);
     console.log('\n\n⏹ Stopping recording...');
     await saveRecording(page, context, browser);
   };
@@ -333,49 +313,57 @@ async function record(): Promise<void> {
   process.on('SIGTERM', cleanup);
 
   try {
-    await page.goto(config.url);
+    await page.goto(config.url, { waitUntil: 'domcontentloaded' });
+    await dismissCookieBanners(page);
+    await injectStopListener(page);
     await injectCursorVisualization(page);
-    await injectRecordingControls(page, config.duration);
 
-    console.log('🔴 Recording... (Press Esc or click Stop button)\n');
+    console.log('🔴 Recording... (Press Esc to stop)\n');
+    timer = startTerminalTimer(config.duration);
 
-    // Re-inject cursor and controls on navigation
+    // Re-inject on navigation
     page.on('load', async () => {
+      if (stopped) return;
       try {
+        await dismissCookieBanners(page);
+        await injectStopListener(page);
         await injectCursorVisualization(page);
-        await injectRecordingControls(page, config.duration);
       } catch {
-        // Page might have closed
+        // Page might have closed or navigated again
       }
     });
 
-    // Poll for stop signal from browser or wait for max duration
+    // Wait for ESC key, max duration, or Ctrl+C
     const startTime = Date.now();
     while (!stopped) {
-      // Check if user clicked Stop button or pressed Escape
-      const shouldStop = await page.evaluate(() => (window as any).__stopRecording === true).catch(() => true);
-
-      if (shouldStop) {
-        console.log('\n🛑 Stop requested from browser');
-        await cleanup();
-        break;
-      }
-
       // Check max duration
       const elapsed = (Date.now() - startTime) / 1000;
       if (elapsed >= config.duration) {
-        console.log(`\n⏱ Max duration (${config.duration}s) reached.`);
+        console.log(`\n\n⏱ Max duration (${config.duration}s) reached.`);
         await cleanup();
         break;
       }
 
+      // Check for ESC key press in browser
+      // Use try/catch to handle navigation - if page context changes, just continue
+      try {
+        const shouldStop = await page.evaluate(() => (window as any).__stopRecording === true);
+        if (shouldStop) {
+          console.log('\n\n🛑 Stop requested (Esc pressed)');
+          await cleanup();
+          break;
+        }
+      } catch {
+        // Page is navigating or context changed - this is fine, continue recording
+      }
+
       // Poll every 200ms
-      await page.waitForTimeout(200);
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
 
   } catch (error) {
     if (!stopped) {
-      console.error('Recording error:', error);
+      console.error('\nRecording error:', error);
       await cleanup();
     }
   }

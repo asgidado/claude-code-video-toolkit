@@ -18,7 +18,7 @@ On invocation, scan skills and present:
    - Read SKILL.md frontmatter for metadata
    - Extract: name, status, description, triggers
    - Check for reference.md (detailed docs)
-3. Read _internal/skills-registry.json for additional metadata
+3. Read _internal/toolkit-registry.json for additional metadata
 4. Sort by status (stable first), then alphabetically
 ```
 
@@ -171,14 +171,16 @@ Use this skill when:
 
 3. Optionally create `reference.md` for detailed documentation
 
-4. Update `_internal/skills-registry.json`:
+4. Update `_internal/toolkit-registry.json`:
 ```json
 {
   "skills": {
     "{name}": {
+      "path": ".claude/skills/{name}/",
+      "description": "Brief description of the skill",
       "status": "draft",
       "created": "YYYY-MM-DD",
-      "lastReviewed": null
+      "updated": "YYYY-MM-DD"
     }
   }
 }
@@ -250,18 +252,18 @@ Next steps:
 
 ## Registry
 
-Skills are tracked in `_internal/skills-registry.json`:
+Skills are tracked in `_internal/toolkit-registry.json`:
 
 ```json
 {
   "skills": {
-    "remotion": { "status": "stable", "lastReviewed": "2024-12-01" },
-    "elevenlabs": { "status": "stable", "lastReviewed": "2024-12-01" },
-    "ffmpeg": { "status": "beta", "created": "2024-12-08" },
-    "playwright-recording": { "status": "beta", "created": "2024-12-08" }
-  },
-  "config": {
-    "defaultVoiceId": "use ELEVENLABS_VOICE_ID env var"
+    "remotion": {
+      "path": ".claude/skills/remotion/",
+      "description": "Remotion video framework",
+      "status": "stable",
+      "created": "2025-12-04",
+      "updated": "2025-12-04"
+    }
   }
 }
 ```

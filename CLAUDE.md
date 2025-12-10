@@ -24,7 +24,8 @@ claude-code-video-toolkit/
 │   ├── sprint-review/   # Sprint review video template
 │   └── product-demo/    # Marketing/product demo template
 ├── brands/              # Brand profiles (colors, fonts, voice)
-│   └── default/
+│   ├── default/
+│   └── digital-samba/
 ├── projects/            # Your video projects go here (gitignored)
 ├── examples/            # Curated showcase projects (shared)
 ├── assets/              # Shared assets
@@ -119,9 +120,29 @@ brands/my-brand/
 
 See `docs/creating-brands.md` for details.
 
+## Shared Components
+
+Reusable video components in `lib/components/`. Import in templates via:
+
+```tsx
+import { AnimatedBackground, SlideTransition, Label } from '../../../../lib/components';
+```
+
+| Component | Purpose |
+|-----------|---------|
+| `AnimatedBackground` | Floating shapes background (variants: subtle, tech, warm, dark) |
+| `SlideTransition` | Scene transitions (fade, zoom, slide-up, blur-fade) |
+| `Label` | Floating label badge with optional JIRA reference |
+| `Vignette` | Cinematic edge darkening overlay |
+| `LogoWatermark` | Corner logo branding |
+| `SplitScreen` | Side-by-side video comparison |
+| `NarratorPiP` | Picture-in-picture presenter overlay |
+| `Envelope` | 3D envelope with opening flap animation |
+| `PointingHand` | Animated hand emoji with slide-in and pulse |
+
 ## Python Tools
 
-Audio generation tools in `tools/`. Config from `_internal/skills-registry.json`.
+Audio generation tools in `tools/`. Config from `_internal/toolkit-registry.json`.
 
 ```bash
 # Setup

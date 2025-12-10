@@ -206,6 +206,11 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 3. Document narrator video creation workflow (see BACKLOG.md)
 4. Create tutorial template
 5. Promote ffmpeg and playwright-recording skills to stable after testing
+6. **Documentation improvements** (from 2025-12-10 review)
+   - [ ] Add `tools/README.md` for Python utilities
+   - [ ] Add `lib/components/README.md` or implement `/components` command
+   - [ ] Add troubleshooting guide to docs/
+   - [ ] Consider video tutorial for getting started
 
 ## In Progress
 

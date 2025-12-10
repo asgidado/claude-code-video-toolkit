@@ -12,6 +12,9 @@ All notable changes to claude-code-video-toolkit.
 - **Slash commands not loading** - Renamed `/skill` to `/skills` to avoid conflict with built-in `Skill` tool. The naming collision was silently preventing ALL custom commands from loading. Bug reported to Anthropic.
 
 ### Added
+- **Animation components** (`lib/components/`)
+  - Envelope - 3D envelope with opening flap animation, configurable message
+  - PointingHand - Animated hand emoji with directional slide-in and pulse effect
 - **`/contribute` command** - Guided contribution workflow
   - Report issues via `gh issue create`
   - Submit PRs for improvements
@@ -27,6 +30,10 @@ All notable changes to claude-code-video-toolkit.
   - How to add features to existing templates
   - Template maturity indicators
   - Pattern extraction to shared lib/
+- **Product demo template README** (`templates/product-demo/README.md`)
+  - Quick start guide, configuration, project structure
+  - All 7 scene types documented with examples
+  - Narrator PiP and demo chrome options
 
 ### Changed
 - **`projects/` now fully gitignored** - User video work stays completely private
@@ -42,6 +49,13 @@ All notable changes to claude-code-video-toolkit.
   - Creates README with quick start instructions
   - **Contributor recognition** with backlinks to website/org
 - **CONTRIBUTORS.md** - Recognition for organizations and individuals who share examples
+- **Documentation updates**
+  - `docs/getting-started.md` - Updated for `/video` command, added multi-session workflow
+  - `docs/creating-brands.md` - Updated for `/brand` command integration
+- **Renamed `skills-registry.json` → `toolkit-registry.json`**
+  - Consistent format across all entries (path, description, status, created, updated)
+  - Added `components` section for shared lib/components
+  - Synced with actual commands (7), templates (2), components (9)
 
 ---
 
@@ -75,7 +89,7 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
-## 2024-12-09
+## 2025-12-09
 
 ### Added
 - **Shared component library** (`lib/`)
@@ -101,7 +115,7 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
-## 2024-12-09 (earlier)
+## 2025-12-09 (earlier)
 
 ### Added
 - **Product demo template** (`templates/product-demo/`)
@@ -146,7 +160,7 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
-## 2024-12-08
+## 2025-12-08
 
 ### Added
 - **Open source release** - Published to GitHub at digitalsamba/claude-code-video-toolkit
@@ -194,7 +208,7 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
-## 2024-12-04
+## 2025-12-04
 
 ### Added
 - Sprint review template (`templates/sprint-review/`)

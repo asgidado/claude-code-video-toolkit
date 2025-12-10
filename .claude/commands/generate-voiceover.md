@@ -98,7 +98,7 @@ Before gathering configuration, check if we're in a project context:
 ## Tool Location
 
 - Voiceover tool: `/Users/conalmullan/work/video/tools/voiceover.py`
-- Config: `/Users/conalmullan/work/video/_toolkit/skills-registry.json` (voice ID)
+- Config: `_internal/toolkit-registry.json` (voice ID)
 - API Key: `.env` file (`ELEVENLABS_API_KEY`)
 
 ## Voice Settings Reference
@@ -116,12 +116,12 @@ Share these tips with the user:
 - Use `<break time="1.0s" />` for pauses (SSML-style)
 - Keep sentences short for natural pacing
 - Test with `--dry-run` flag first to check character count
-- The voice ID is configured in `_toolkit/skills-registry.json`
+- The voice ID is configured in `_internal/toolkit-registry.json`
 
 ## Error Handling
 
 - If `ELEVENLABS_API_KEY` is missing, tell user to add it to `.env`
-- If voice ID is missing, tell user to set `config.voiceId` in `skills-registry.json`
+- If voice ID is missing, tell user to set `config.voiceId` in `toolkit-registry.json`
 - If script file not found, offer to create a template
 
 ## Example Output

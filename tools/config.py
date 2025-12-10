@@ -19,7 +19,7 @@ def find_workspace_root() -> Path:
 def load_registry() -> dict:
     """Load the skills registry configuration."""
     root = find_workspace_root()
-    registry_path = root / "_internal" / "skills-registry.json"
+    registry_path = root / "_internal" / "toolkit-registry.json"
 
     if not registry_path.exists():
         return {"config": {}}
