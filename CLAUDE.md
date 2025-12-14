@@ -71,6 +71,7 @@ Claude Code has deep knowledge in these domains via `.claude/skills/`:
 | elevenlabs | stable | TTS, voice cloning, music, SFX |
 | ffmpeg | beta | Asset conversion, compression |
 | playwright-recording | beta | Browser demo capture |
+| frontend-design | stable | Visual design refinement for slides |
 
 ## Commands
 
@@ -78,6 +79,7 @@ Claude Code has deep knowledge in these domains via `.claude/skills/`:
 |---------|-------------|
 | `/video` | Video projects - list, resume, or create new |
 | `/scene-review` | Scene-by-scene review in Remotion Studio (before voiceover) |
+| `/design` | Focused design refinement session for a scene |
 | `/brand` | Brand profiles - list, edit, or create new |
 | `/template` | List available templates and their features |
 | `/skills` | List installed skills or create new ones |
@@ -167,11 +169,13 @@ python tools/sfx.py --prompt "Thunder crack" --output thunder.mp3
 1. **Create/resume project** - Run `/video`, choose template and brand (or resume existing)
 2. **Review script** - Edit `VOICEOVER-SCRIPT.md` to plan content
 3. **Gather assets** - Record demos with `/record-demo` or add external videos
-4. **Generate audio** - Use `/generate-voiceover` for AI narration
-5. **Configure** - Update config file with asset paths and timing
-6. **Preview** - `npm run studio` in project directory
-7. **Iterate** - Adjust timing, content, styling with Claude Code
-8. **Render** - `npm run render` for final MP4
+4. **Scene review** - Run `/scene-review` to verify visuals in Remotion Studio
+5. **Design refinement** - Use `/design` or the "Refine" option in scene-review to improve slide visuals
+6. **Generate audio** - Use `/generate-voiceover` for AI narration
+7. **Configure** - Update config file with asset paths and timing
+8. **Preview** - `npm run studio` in project directory
+9. **Iterate** - Adjust timing, content, styling with Claude Code
+10. **Render** - `npm run render` for final MP4
 
 ## Project Lifecycle
 
@@ -253,6 +257,42 @@ const opacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: 'clamp' 
 <Audio src={staticFile('voiceover.mp3')} volume={1} />
 <Audio src={staticFile('music.mp3')} volume={0.15} />
 ```
+
+## Design Refinement with frontend-design Skill
+
+The `frontend-design` skill elevates slide visuals from generic to distinctive. It's integrated at multiple levels:
+
+### During Scene Review (`/scene-review`)
+When reviewing a slide scene, choose "Refine" to invoke frontend-design for visual improvements. The skill helps with:
+- Color palette and mood
+- Typography and text animations
+- Background effects and atmosphere
+- Motion and timing
+- Visual coherence between scenes
+
+### Focused Sessions (`/design`)
+For deep-dive design work on a specific scene:
+```
+/design title    # Refine the title slide
+/design cta      # Refine the CTA slide
+```
+
+### When to Use
+- Slide scenes (title, problem, solution, stats, cta) that feel generic
+- When something "doesn't feel right" visually
+- When building visual contrast between scenes (e.g., calm title → harsh problem)
+- When animations feel too basic or too busy
+
+### Visual Narrative Arc
+Consider how visual intensity builds across scenes:
+- **Title**: Set the mood, plant visual seeds
+- **Problem**: Create tension (harsh contrast)
+- **Solution**: Relief and hope return
+- **Demo**: Neutral, content-focused
+- **Stats**: Build credibility
+- **CTA**: Climax - maximum visual energy
+
+The frontend-design skill understands this narrative and helps create appropriate contrast and flow.
 
 ## Toolkit vs Project Work
 

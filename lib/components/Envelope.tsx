@@ -38,6 +38,10 @@ export interface EnvelopeProps {
   messageFont?: string;
   /** Font size for the message */
   messageFontSize?: number;
+  /** Show postage stamp in top-right corner */
+  showStamp?: boolean;
+  /** Show faded address lines in center */
+  showAddressLines?: boolean;
 }
 
 export const Envelope: React.FC<EnvelopeProps> = ({
@@ -48,6 +52,8 @@ export const Envelope: React.FC<EnvelopeProps> = ({
   message,
   messageFont = 'Georgia, serif',
   messageFontSize = 16,
+  showStamp = false,
+  showAddressLines = false,
 }) => {
   const flapHeight = height * 0.4;
   // flapOpen: 0 = closed (rotated down), 1 = open (rotated up/back)
@@ -79,6 +85,117 @@ export const Envelope: React.FC<EnvelopeProps> = ({
           borderRadius: 4,
         }}
       />
+
+      {/* Postage stamp - top right */}
+      {showStamp && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 120,
+            right: 25,
+            width: width * 0.12,
+            height: width * 0.14,
+            background: 'linear-gradient(135deg, #e8d4b8 0%, #d4c4a8 50%, #c8b898 100%)',
+            border: '2px solid rgba(120, 90, 60, 0.3)',
+            borderRadius: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '1px 2px 4px rgba(0,0,0,0.15)',
+            transform: 'rotate(2deg)',
+          }}
+        >
+          {/* Stamp perforated edge effect */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: -4,
+              background: `radial-gradient(circle at 0% 50%, transparent 3px, ${color} 3px) left / 8px 100%,
+                          radial-gradient(circle at 100% 50%, transparent 3px, ${color} 3px) right / 8px 100%,
+                          radial-gradient(circle at 50% 0%, transparent 3px, ${color} 3px) top / 100% 8px,
+                          radial-gradient(circle at 50% 100%, transparent 3px, ${color} 3px) bottom / 100% 8px`,
+              backgroundRepeat: 'no-repeat',
+              pointerEvents: 'none',
+            }}
+          />
+          {/* Stamp design - simple EU-style */}
+          <div
+            style={{
+              width: '70%',
+              height: '50%',
+              borderRadius: '50%',
+              border: '2px solid rgba(70, 50, 30, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 4,
+            }}
+          >
+            <span style={{ fontSize: width * 0.025, color: 'rgba(70, 50, 30, 0.5)' }}>✦</span>
+          </div>
+          {/* Stamp value */}
+          <span
+            style={{
+              fontSize: width * 0.018,
+              fontFamily: 'Georgia, serif',
+              color: 'rgba(70, 50, 30, 0.6)',
+              fontWeight: 600,
+            }}
+          >
+            EU
+          </span>
+        </div>
+      )}
+
+      {/* Faded scribble address lines - center */}
+      {showAddressLines && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(45% + 50px)',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            width: '50%',
+          }}
+        >
+          {/* Line 1 - name (shorter) */}
+          <div
+            style={{
+              height: 10,
+              background: 'linear-gradient(90deg, transparent 5%, rgba(80, 60, 40, 0.25) 15%, rgba(80, 60, 40, 0.3) 50%, rgba(80, 60, 40, 0.2) 80%, transparent 95%)',
+              borderRadius: 3,
+              width: '65%',
+              marginLeft: '5%',
+              transform: 'rotate(-0.5deg)',
+            }}
+          />
+          {/* Line 2 - street (longer) */}
+          <div
+            style={{
+              height: 10,
+              background: 'linear-gradient(90deg, transparent 3%, rgba(80, 60, 40, 0.2) 10%, rgba(80, 60, 40, 0.35) 40%, rgba(80, 60, 40, 0.25) 70%, rgba(80, 60, 40, 0.15) 90%, transparent 97%)',
+              borderRadius: 3,
+              width: '90%',
+              transform: 'rotate(0.3deg)',
+            }}
+          />
+          {/* Line 3 - city/country (medium) */}
+          <div
+            style={{
+              height: 10,
+              background: 'linear-gradient(90deg, transparent 8%, rgba(80, 60, 40, 0.22) 18%, rgba(80, 60, 40, 0.28) 45%, rgba(80, 60, 40, 0.18) 75%, transparent 92%)',
+              borderRadius: 3,
+              width: '75%',
+              marginLeft: '8%',
+              transform: 'rotate(-0.2deg)',
+            }}
+          />
+        </div>
+      )}
 
       {/* Optional message on envelope */}
       {message && (

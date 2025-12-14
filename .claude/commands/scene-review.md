@@ -86,8 +86,9 @@ Read the scenes array from the config file. For each scene:
 
 1. Approve - looks good
 2. Edit - need to change something in config
-3. Flag - note an issue to address later
-4. Skip - review later
+3. Refine - improve visuals with frontend-design skill
+4. Flag - note an issue to address later
+5. Skip - review later
 ```
 
 **Important:** Do NOT try to interpret or format the scene content. Let the user see it in Remotion Studio - that's the source of truth.
@@ -108,6 +109,27 @@ Ask what needs to change:
 - Remotion Studio hot-reloads automatically
 - "Check Remotion Studio - does it look right now?"
 - If yes, approve. If no, continue editing.
+
+### Refine (frontend-design skill)
+For visual/aesthetic improvements beyond config changes:
+1. Invoke the `frontend-design` skill
+2. Read the slide component (e.g., `src/components/slides/TitleSlide.tsx`)
+3. Also read adjacent scenes to understand the visual narrative arc
+4. Work with user iteratively on:
+   - Color palette and mood
+   - Typography and text animations
+   - Background effects and atmosphere
+   - Motion and timing
+   - Visual coherence with surrounding scenes
+5. Apply changes to the component file
+6. User verifies in Remotion Studio (hot-reloads)
+7. Continue refining or approve when satisfied
+
+**When to suggest Refine:**
+- Slide scenes (title, problem, solution, stats, cta) that feel generic
+- When user says something "doesn't feel right" or wants more impact
+- When visual contrast between scenes needs work
+- When animations feel too basic or too busy
 
 ### Flag
 Record an issue without blocking:
