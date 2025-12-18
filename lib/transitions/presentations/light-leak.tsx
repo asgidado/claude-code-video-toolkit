@@ -54,10 +54,10 @@ const LightLeakPresentation: React.FC<
     });
   }, [progress]);
 
-  // Opacity for entering/exiting
+  // Simple linear crossfade opacity (use presentationProgress directly)
   const opacity = presentationDirection === 'exiting'
-    ? interpolate(progress, [0, 0.6], [1, 0], { extrapolateRight: 'clamp' })
-    : interpolate(progress, [0.4, 1], [0, 1], { extrapolateLeft: 'clamp' });
+    ? interpolate(presentationProgress, [0, 1], [1, 0])
+    : interpolate(presentationProgress, [0, 1], [0, 1]);
 
   // Color gradients based on temperature
   const getGradientColors = () => {

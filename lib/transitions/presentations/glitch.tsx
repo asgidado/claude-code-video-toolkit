@@ -11,8 +11,8 @@ import type {
   TransitionPresentation,
   TransitionPresentationComponentProps,
 } from '@remotion/transitions';
-import React, { useMemo } from 'react';
-import { AbsoluteFill, random, interpolate } from 'remotion';
+import React, { useMemo, useState } from 'react';
+import { AbsoluteFill, random, interpolate, useCurrentFrame } from 'remotion';
 
 export type GlitchProps = {
   /** Intensity of the glitch effect (0-1). Default: 0.8 */
@@ -35,50 +35,52 @@ const GlitchPresentation: React.FC<
     scanLines = true,
   } = passedProps;
 
-  // For exiting scene, we reverse the effect
-  const progress = presentationDirection === 'exiting'
-    ? 1 - presentationProgress
-    : presentationProgress;
+  // Unique filter IDs for this instance
+  const [filterId] = useState(() => `glitch-${String(random(null)).slice(2, 10)}`);
 
-  // Glitch is most intense in the middle of the transition
+  // Get actual video frame for timing flicker effects
+  const frame = useCurrentFrame();
+
+  // Glitch intensity peaks in the middle of the transition
   const glitchIntensity = useMemo(() => {
-    const peak = interpolate(progress, [0, 0.5, 1], [0, 1, 0], {
+    const peak = interpolate(presentationProgress, [0, 0.5, 1], [0, 1, 0], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
     });
     return peak * intensity;
-  }, [progress, intensity]);
+  }, [presentationProgress, intensity]);
 
-  // Generate deterministic slice offsets
+  // Flicker changes every 2-3 frames for rapid but not every-frame chaos
+  const flickerFrame = Math.floor(frame / 2);
+
+  // Generate deterministic slice offsets based on current progress
   const sliceOffsets = useMemo(() => {
     return Array.from({ length: slices }, (_, i) => {
-      const seed = `glitch-slice-${i}`;
-      const baseOffset = (random(seed) - 0.5) * 60 * glitchIntensity;
-      // Add some temporal variation
-      const flicker = random(`${seed}-${Math.floor(progress * 10)}`) > 0.7 ? 1.5 : 1;
-      return baseOffset * flicker;
+      // Different offset per flicker frame for rapid movement
+      const seed = `glitch-slice-${i}-${flickerFrame}`;
+      const baseOffset = (random(seed) - 0.5) * 200 * glitchIntensity;
+      // Aggressive flicker - some slices jump dramatically
+      const jumpSeed = `jump-${i}-${flickerFrame}`;
+      const jump = random(jumpSeed) > 0.4 ? (random(`${jumpSeed}-dir`) > 0.5 ? 2.5 : -2.5) : 1;
+      return baseOffset * jump;
     });
-  }, [slices, glitchIntensity, progress]);
+  }, [slices, glitchIntensity, flickerFrame]);
 
-  // RGB shift amounts
-  const rgbShiftAmount = rgbShift ? glitchIntensity * 8 : 0;
+  // RGB shift amount - much more aggressive
+  const rgbShiftAmount = rgbShift ? glitchIntensity * 25 : 0;
 
-  // Opacity for the entering/exiting effect
+  // Rapid RGB flicker
+  const rgbFlicker = random(`rgb-${flickerFrame}`) > 0.3 ? 1 : 0.3;
+
+  // Simple linear crossfade opacity
   const opacity = presentationDirection === 'exiting'
-    ? interpolate(progress, [0, 0.3], [1, 0], { extrapolateRight: 'clamp' })
-    : interpolate(progress, [0.7, 1], [0, 1], { extrapolateLeft: 'clamp' });
-
-  const containerStyle: React.CSSProperties = useMemo(() => ({
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    overflow: 'hidden',
-  }), []);
+    ? interpolate(presentationProgress, [0, 1], [1, 0])
+    : interpolate(presentationProgress, [0, 1], [0, 1]);
 
   const sliceHeight = 100 / slices;
 
   return (
-    <AbsoluteFill style={containerStyle}>
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
       {/* Main content with slice displacement */}
       <AbsoluteFill style={{ opacity }}>
         {sliceOffsets.map((offset, i) => (
@@ -89,18 +91,20 @@ const GlitchPresentation: React.FC<
               top: `${i * sliceHeight}%`,
               left: 0,
               width: '100%',
-              height: `${sliceHeight + 0.5}%`, // Slight overlap to prevent gaps
+              height: `${sliceHeight + 0.5}%`,
               overflow: 'hidden',
               transform: `translateX(${offset}px)`,
             }}
           >
+            {/* Position the full content, offset so this slice shows the right portion */}
             <div
               style={{
                 position: 'absolute',
-                top: `-${i * sliceHeight}%`,
+                top: 0,
                 left: 0,
                 width: '100%',
-                height: `${100 / sliceHeight * 100}%`,
+                height: `${slices * 100}%`,
+                transform: `translateY(-${i * (100 / slices)}%)`,
               }}
             >
               {children}
@@ -110,26 +114,26 @@ const GlitchPresentation: React.FC<
       </AbsoluteFill>
 
       {/* RGB channel separation overlay */}
-      {rgbShift && glitchIntensity > 0.1 && (
+      {rgbShift && glitchIntensity > 0.05 && (
         <>
-          {/* Red channel */}
+          {/* Red channel - shifted left */}
           <AbsoluteFill
             style={{
-              opacity: opacity * 0.5 * glitchIntensity,
-              transform: `translateX(${-rgbShiftAmount}px)`,
+              opacity: opacity * 0.6 * glitchIntensity * rgbFlicker,
+              transform: `translateX(${-rgbShiftAmount}px) translateY(${(random(`rgb-y-${flickerFrame}`) - 0.5) * 10 * glitchIntensity}px)`,
               mixBlendMode: 'screen',
-              filter: 'url(#redChannel)',
+              filter: `url(#${filterId}-red)`,
             }}
           >
             {children}
           </AbsoluteFill>
-          {/* Cyan channel */}
+          {/* Cyan channel - shifted right */}
           <AbsoluteFill
             style={{
-              opacity: opacity * 0.5 * glitchIntensity,
-              transform: `translateX(${rgbShiftAmount}px)`,
+              opacity: opacity * 0.6 * glitchIntensity * rgbFlicker,
+              transform: `translateX(${rgbShiftAmount}px) translateY(${(random(`rgb-y2-${flickerFrame}`) - 0.5) * 10 * glitchIntensity}px)`,
               mixBlendMode: 'screen',
-              filter: 'url(#cyanChannel)',
+              filter: `url(#${filterId}-cyan)`,
             }}
           >
             {children}
@@ -141,13 +145,13 @@ const GlitchPresentation: React.FC<
       {scanLines && glitchIntensity > 0.1 && (
         <AbsoluteFill
           style={{
-            opacity: glitchIntensity * 0.3,
+            opacity: glitchIntensity * 0.4,
             background: `repeating-linear-gradient(
               0deg,
               transparent,
               transparent 2px,
-              rgba(0, 0, 0, 0.3) 2px,
-              rgba(0, 0, 0, 0.3) 4px
+              rgba(0, 0, 0, 0.4) 2px,
+              rgba(0, 0, 0, 0.4) 4px
             )`,
             pointerEvents: 'none',
           }}
@@ -155,10 +159,10 @@ const GlitchPresentation: React.FC<
       )}
 
       {/* Noise overlay for texture */}
-      {glitchIntensity > 0.2 && (
+      {glitchIntensity > 0.15 && (
         <AbsoluteFill
           style={{
-            opacity: glitchIntensity * 0.15,
+            opacity: glitchIntensity * 0.2,
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
             pointerEvents: 'none',
             mixBlendMode: 'overlay',
@@ -166,16 +170,69 @@ const GlitchPresentation: React.FC<
         />
       )}
 
+      {/* Random glitch blocks - more of them, more aggressive */}
+      {glitchIntensity > 0.15 && (
+        <AbsoluteFill style={{ pointerEvents: 'none' }}>
+          {Array.from({ length: 8 }, (_, i) => {
+            const blockSeed = `block-${i}-${flickerFrame}`;
+            const show = random(blockSeed) > 0.4;
+            if (!show) return null;
+
+            const x = random(`${blockSeed}-x`) * 100;
+            const y = random(`${blockSeed}-y`) * 100;
+            const w = 5 + random(`${blockSeed}-w`) * 40;
+            const h = 1 + random(`${blockSeed}-h`) * 15;
+
+            const colorChoice = random(`${blockSeed}-c`);
+            let bgColor;
+            if (colorChoice > 0.7) {
+              bgColor = `rgba(255, 255, 255, ${glitchIntensity * 0.5})`;
+            } else if (colorChoice > 0.4) {
+              bgColor = `rgba(255, 0, 80, ${glitchIntensity * 0.6})`;
+            } else {
+              bgColor = `rgba(0, 255, 255, ${glitchIntensity * 0.6})`;
+            }
+
+            return (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  width: `${w}%`,
+                  height: `${h}%`,
+                  backgroundColor: bgColor,
+                  mixBlendMode: 'screen',
+                }}
+              />
+            );
+          })}
+        </AbsoluteFill>
+      )}
+
+      {/* White flash on peak glitch */}
+      {glitchIntensity > 0.7 && random(`flash-${flickerFrame}`) > 0.6 && (
+        <AbsoluteFill
+          style={{
+            backgroundColor: 'white',
+            opacity: glitchIntensity * 0.15,
+            mixBlendMode: 'overlay',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
       {/* SVG filters for RGB separation */}
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <defs>
-          <filter id="redChannel">
+          <filter id={`${filterId}-red`}>
             <feColorMatrix
               type="matrix"
               values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
             />
           </filter>
-          <filter id="cyanChannel">
+          <filter id={`${filterId}-cyan`}>
             <feColorMatrix
               type="matrix"
               values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"

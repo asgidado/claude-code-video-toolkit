@@ -51,14 +51,14 @@ export const MyVideo = () => {
 
 ### Custom Transitions (this library)
 
-| Transition | Description | Best For |
-|------------|-------------|----------|
-| `glitch()` | Digital distortion with slice displacement and RGB separation | Tech demos, cyberpunk, edgy reveals |
-| `rgbSplit()` | Chromatic aberration with channel separation | Modern tech, energetic transitions |
-| `zoomBlur()` | Radial motion blur with scale | CTAs, reveals, high-energy moments |
-| `lightLeak()` | Cinematic lens flare and overexposure | Emotional moments, celebrations, film aesthetic |
-| `clockWipe()` | Radial wipe like clock hands | Time-related content, playful reveals |
-| `pixelate()` | Digital mosaic dissolution | Retro/gaming, digital transformations |
+| Transition | Description | Best For | Status |
+|------------|-------------|----------|--------|
+| `glitch()` | Digital distortion with slice displacement and RGB separation | Tech demos, cyberpunk, edgy reveals | ✅ Validated |
+| `rgbSplit()` | Chromatic aberration with color fringing | Modern tech, energetic transitions | ✅ Validated |
+| `zoomBlur()` | Radial motion blur with scale | CTAs, reveals, high-energy moments | ✅ Validated |
+| `lightLeak()` | Cinematic lens flare and overexposure | Emotional moments, celebrations, film aesthetic | 🔄 Pending |
+| `clockWipe()` | Radial wipe like clock hands | Time-related content, playful reveals | 🔄 Pending |
+| `pixelate()` | Digital mosaic dissolution | Retro/gaming, digital transformations | 🔄 Pending |
 
 ### Official Transitions (re-exported)
 

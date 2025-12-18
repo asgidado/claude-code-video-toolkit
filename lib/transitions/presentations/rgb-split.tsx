@@ -1,9 +1,9 @@
 /**
  * RGB Split Transition
  *
- * Chromatic aberration effect that separates RGB channels
+ * Chromatic aberration effect that creates color fringing
  * with directional displacement. Creates a modern tech aesthetic
- * reminiscent of CRT displays and retro-futuristic visuals.
+ * reminiscent of CRT displays and analog video glitches.
  *
  * Best for: Tech products, modern branding, energetic transitions
  */
@@ -17,10 +17,8 @@ import { AbsoluteFill, interpolate } from 'remotion';
 export type RgbSplitProps = {
   /** Direction of the split: 'horizontal' | 'vertical' | 'diagonal'. Default: 'horizontal' */
   direction?: 'horizontal' | 'vertical' | 'diagonal';
-  /** Maximum pixel displacement. Default: 30 */
+  /** Maximum pixel displacement. Default: 50 */
   displacement?: number;
-  /** Include subtle blur on channels. Default: true */
-  channelBlur?: boolean;
 };
 
 const RgbSplitPresentation: React.FC<
@@ -28,27 +26,20 @@ const RgbSplitPresentation: React.FC<
 > = ({ children, presentationDirection, presentationProgress, passedProps }) => {
   const {
     direction = 'horizontal',
-    displacement = 30,
-    channelBlur = true,
+    displacement = 50,
   } = passedProps;
 
-  const progress = presentationDirection === 'exiting'
-    ? 1 - presentationProgress
-    : presentationProgress;
-
-  // Split intensity peaks in the middle
+  // Split intensity peaks in the middle of the transition
   const splitIntensity = useMemo(() => {
-    return interpolate(progress, [0, 0.5, 1], [0, 1, 0], {
+    return interpolate(presentationProgress, [0, 0.5, 1], [0, 1, 0], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
     });
-  }, [progress]);
+  }, [presentationProgress]);
 
-  // Calculate channel offsets based on direction
-  const getChannelOffset = (channel: 'red' | 'green' | 'blue') => {
-    const multiplier = channel === 'red' ? -1 : channel === 'blue' ? 1 : 0;
+  // Calculate offset based on direction
+  const getOffset = (multiplier: number) => {
     const offset = displacement * splitIntensity * multiplier;
-
     switch (direction) {
       case 'horizontal':
         return { x: offset, y: 0 };
@@ -59,120 +50,68 @@ const RgbSplitPresentation: React.FC<
     }
   };
 
-  const redOffset = getChannelOffset('red');
-  const blueOffset = getChannelOffset('blue');
+  const redOffset = getOffset(-1);
+  const cyanOffset = getOffset(1);
 
-  // Opacity for entering/exiting
+  // Simple linear crossfade opacity
   const opacity = presentationDirection === 'exiting'
-    ? interpolate(progress, [0, 0.4], [1, 0], { extrapolateRight: 'clamp' })
-    : interpolate(progress, [0.6, 1], [0, 1], { extrapolateLeft: 'clamp' });
+    ? interpolate(presentationProgress, [0, 1], [1, 0])
+    : interpolate(presentationProgress, [0, 1], [0, 1]);
 
-  // Blur amount for channels (subtle motion blur effect)
-  const blurAmount = channelBlur ? splitIntensity * 2 : 0;
-
-  const containerStyle: React.CSSProperties = useMemo(() => ({
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  }), []);
-
-  // Only show RGB separation when there's actual displacement
-  const showSplit = splitIntensity > 0.05;
+  // Ghost layer opacity based on effect intensity
+  const ghostOpacity = splitIntensity * 0.7;
 
   return (
-    <AbsoluteFill style={containerStyle}>
-      {showSplit ? (
-        <>
-          {/* Red channel */}
-          <AbsoluteFill
-            style={{
-              opacity: opacity,
-              transform: `translate(${redOffset.x}px, ${redOffset.y}px)`,
-              filter: blurAmount > 0 ? `blur(${blurAmount}px)` : undefined,
-              mixBlendMode: 'screen',
-            }}
-          >
-            <div style={{
-              width: '100%',
-              height: '100%',
-              filter: 'url(#rgbSplit-red)',
-            }}>
-              {children}
-            </div>
-          </AbsoluteFill>
+    <AbsoluteFill>
+      {/* Main content layer */}
+      <AbsoluteFill style={{ opacity }}>
+        {children}
+      </AbsoluteFill>
 
-          {/* Green channel (center, no offset) */}
-          <AbsoluteFill
-            style={{
-              opacity: opacity,
-              mixBlendMode: 'screen',
-            }}
-          >
-            <div style={{
-              width: '100%',
-              height: '100%',
-              filter: 'url(#rgbSplit-green)',
-            }}>
-              {children}
-            </div>
-          </AbsoluteFill>
-
-          {/* Blue channel */}
-          <AbsoluteFill
-            style={{
-              opacity: opacity,
-              transform: `translate(${blueOffset.x}px, ${blueOffset.y}px)`,
-              filter: blurAmount > 0 ? `blur(${blurAmount}px)` : undefined,
-              mixBlendMode: 'screen',
-            }}
-          >
-            <div style={{
-              width: '100%',
-              height: '100%',
-              filter: 'url(#rgbSplit-blue)',
-            }}>
-              {children}
-            </div>
-          </AbsoluteFill>
-        </>
-      ) : (
-        <AbsoluteFill style={{ opacity }}>
+      {/* Red/magenta ghost - offset one direction */}
+      {splitIntensity > 0.05 && (
+        <AbsoluteFill
+          style={{
+            opacity: opacity * ghostOpacity,
+            transform: `translate(${redOffset.x}px, ${redOffset.y}px)`,
+            filter: 'saturate(2) hue-rotate(-30deg) brightness(1.2)',
+            mixBlendMode: 'screen',
+          }}
+        >
           {children}
         </AbsoluteFill>
       )}
 
-      {/* SVG filters for channel isolation */}
-      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="rgbSplit-red" colorInterpolationFilters="sRGB">
-            <feColorMatrix
-              type="matrix"
-              values="1 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
-            />
-          </filter>
-          <filter id="rgbSplit-green" colorInterpolationFilters="sRGB">
-            <feColorMatrix
-              type="matrix"
-              values="0 0 0 0 0
-                      0 1 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
-            />
-          </filter>
-          <filter id="rgbSplit-blue" colorInterpolationFilters="sRGB">
-            <feColorMatrix
-              type="matrix"
-              values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 1 0 0
-                      0 0 0 1 0"
-            />
-          </filter>
-        </defs>
-      </svg>
+      {/* Cyan ghost - offset opposite direction */}
+      {splitIntensity > 0.05 && (
+        <AbsoluteFill
+          style={{
+            opacity: opacity * ghostOpacity,
+            transform: `translate(${cyanOffset.x}px, ${cyanOffset.y}px)`,
+            filter: 'saturate(2) hue-rotate(150deg) brightness(1.2)',
+            mixBlendMode: 'screen',
+          }}
+        >
+          {children}
+        </AbsoluteFill>
+      )}
+
+      {/* Subtle scan line overlay for retro feel */}
+      {splitIntensity > 0.3 && (
+        <AbsoluteFill
+          style={{
+            opacity: splitIntensity * 0.15,
+            background: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(0, 0, 0, 0.3) 2px,
+              rgba(0, 0, 0, 0.3) 4px
+            )`,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
     </AbsoluteFill>
   );
 };

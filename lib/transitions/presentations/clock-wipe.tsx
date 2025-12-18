@@ -36,8 +36,9 @@ const ClockWipePresentation: React.FC<
 
   const [clipId] = useState(() => `clock-wipe-${String(random(null)).slice(2, 10)}`);
 
+  // For exiting, reverse the progress so the wipe "unwipes"
   const progress = presentationDirection === 'exiting'
-    ? presentationProgress
+    ? 1 - presentationProgress
     : presentationProgress;
 
   // Calculate the sweep angle

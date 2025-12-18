@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@remotion/cli": "^4.0.0",
-    "@remotion/paths": "^4.0.0",
-    "@remotion/shapes": "^4.0.0",
-    "@remotion/transitions": "^4.0.0",
+    "@remotion/paths": "^4.0.393",
+    "@remotion/shapes": "^4.0.393",
+    "@remotion/transitions": "^4.0.393",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remotion": "^4.0.0"

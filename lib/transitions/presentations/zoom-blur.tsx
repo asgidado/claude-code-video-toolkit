@@ -70,10 +70,10 @@ const ZoomBlurPresentation: React.FC<
   // Blur tracks with scale movement
   const blur = blurAmount * effectIntensity;
 
-  // Opacity
+  // Simple linear crossfade opacity (use presentationProgress directly, not modified progress)
   const opacity = presentationDirection === 'exiting'
-    ? interpolate(progress, [0, 0.5], [1, 0], { extrapolateRight: 'clamp' })
-    : interpolate(progress, [0.5, 1], [0, 1], { extrapolateLeft: 'clamp' });
+    ? interpolate(presentationProgress, [0, 1], [1, 0])
+    : interpolate(presentationProgress, [0, 1], [0, 1]);
 
   // Transform origin based on setting
   const transformOrigin = useMemo(() => {
