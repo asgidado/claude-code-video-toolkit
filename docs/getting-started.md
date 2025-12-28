@@ -90,8 +90,10 @@ If you prefer manual setup:
 | `/template` | List available templates and their features |
 | `/record-demo` | Record browser interactions with Playwright |
 | `/generate-voiceover` | Generate AI voiceover from script |
+| `/redub` | Redub existing video with a different voice |
 | `/skills` | List installed skills or create new ones |
 | `/contribute` | Share improvements - issues, PRs, examples |
+| `/versions` | Check dependency versions and toolkit updates |
 
 ## Project Structure
 

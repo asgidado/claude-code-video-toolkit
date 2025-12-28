@@ -86,6 +86,7 @@ Claude Code has deep knowledge in these domains via `.claude/skills/`:
 | `/contribute` | Share improvements - issues, PRs, skills, templates |
 | `/record-demo` | Guided Playwright browser recording |
 | `/generate-voiceover` | Generate AI voiceover from script |
+| `/redub` | Redub existing video with different voice |
 | `/versions` | Check dependency versions and toolkit updates |
 
 > **Note:** After creating or modifying commands/skills, restart Claude Code to load changes.
@@ -146,13 +147,13 @@ import { AnimatedBackground, SlideTransition, Label } from '../../../../lib/comp
 
 ## Python Tools
 
-Audio generation tools in `tools/`. Config from `_internal/toolkit-registry.json`.
+Audio and video tools in `tools/`. Config from `_internal/toolkit-registry.json`.
 
 ```bash
 # Setup
 pip install -r tools/requirements.txt
 
-# Voiceover
+# Voiceover generation
 python tools/voiceover.py --script SCRIPT.md --output out.mp3
 
 # Background music
@@ -161,9 +162,21 @@ python tools/music.py --prompt "Subtle corporate" --duration 120 --output music.
 # Sound effects
 python tools/sfx.py --preset whoosh --output sfx.mp3
 python tools/sfx.py --prompt "Thunder crack" --output thunder.mp3
+
+# Redub video with different voice (utility - no project needed)
+python tools/redub.py --input video.mp4 --voice-id VOICE_ID --output dubbed.mp4
 ```
 
-**Presets:** whoosh, click, chime, error, pop, slide
+**SFX Presets:** whoosh, click, chime, error, pop, slide
+
+### Utility Tools vs Project Tools
+
+| Type | Tools | When to Use |
+|------|-------|-------------|
+| **Project tools** | voiceover, music, sfx | During video creation workflow |
+| **Utility tools** | redub | Quick transformations on existing videos |
+
+Utility tools work on any video file without requiring a project structure.
 
 ## Video Production Workflow
 

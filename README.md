@@ -90,6 +90,7 @@ Claude Code has deep knowledge in:
 | `/contribute` | Share improvements — issues, PRs, examples |
 | `/record-demo` | Record browser interactions with Playwright |
 | `/generate-voiceover` | Generate AI voiceover from a script |
+| `/redub` | Redub existing video with a different voice |
 | `/versions` | Check dependency versions and toolkit updates |
 
 > **Note:** After creating or modifying commands/skills, restart Claude Code to load changes.
@@ -145,7 +146,7 @@ Create your own with `/brand`.
 
 ### Python Tools
 
-Audio generation CLI in `tools/`:
+Audio and video tools in `tools/`:
 
 ```bash
 # Generate voiceover
@@ -156,7 +157,12 @@ python tools/music.py --prompt "Upbeat corporate" --duration 120 --output music.
 
 # Generate sound effects
 python tools/sfx.py --preset whoosh --output sfx.mp3
+
+# Redub video with different voice (utility tool - no project needed)
+python tools/redub.py --input video.mp4 --voice-id VOICE_ID --output dubbed.mp4
 ```
+
+**Utility vs Project Tools:** Most tools are used during video creation. Utility tools like `redub` work on any video without a project structure.
 
 ## Project Structure
 

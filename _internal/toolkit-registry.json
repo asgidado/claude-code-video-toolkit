@@ -1,6 +1,6 @@
 {
   "name": "claude-code-video-toolkit",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "AI-native video production workspace for Claude Code",
   "repository": "https://github.com/digitalsamba/claude-code-video-toolkit",
 
@@ -112,6 +112,13 @@
       "status": "stable",
       "created": "2025-12-20",
       "updated": "2025-12-20"
+    },
+    "redub": {
+      "path": ".claude/commands/redub.md",
+      "description": "Redub video with a different voice (transcribe + TTS)",
+      "status": "beta",
+      "created": "2025-12-28",
+      "updated": "2025-12-28"
     }
   },
 
@@ -139,6 +146,14 @@
       "status": "stable",
       "created": "2025-12-08",
       "updated": "2025-12-08"
+    },
+    "redub": {
+      "path": "tools/redub.py",
+      "description": "Redub video with different voice (extract audio, transcribe, TTS, replace)",
+      "usage": "python tools/redub.py --input video.mp4 --voice-id VOICE_ID --output dubbed.mp4",
+      "status": "beta",
+      "created": "2025-12-28",
+      "updated": "2025-12-28"
     }
   },
 

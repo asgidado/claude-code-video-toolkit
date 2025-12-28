@@ -6,6 +6,32 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
+## 2025-12-28 (v0.4.0)
+
+### Added
+- **`/redub` command** - Redub existing videos with a different voice
+  - Guided workflow for voice selection and transcript handling
+  - Supports transcript review/editing before TTS generation
+  - Works on any video file without requiring a project structure
+
+- **`tools/redub.py`** - Voice replacement utility tool
+  - Extracts audio from video (FFmpeg)
+  - Transcribes audio to text (ElevenLabs Scribe STT)
+  - Generates new audio with target voice (ElevenLabs TTS)
+  - Replaces audio track in video (FFmpeg)
+  - Options: `--save-transcript`, `--transcript`, `--keep-temp`, `--speed`
+  - Warns about duration mismatches between original and new audio
+
+- **Utility tools concept** - Documented distinction between project tools and utility tools
+  - Project tools (voiceover, music, sfx): Used during video creation workflow
+  - Utility tools (redub): Quick transformations on existing videos, no project needed
+
+### Changed
+- Updated `CLAUDE.md` with utility tools documentation
+- Updated Python Tools section to include redub
+
+---
+
 ## 2025-12-20
 
 ### Added
