@@ -175,8 +175,8 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 | Templates | 2 | sprint-review, product-demo |
 | Brands | 2 | default, digital-samba |
 | Skills | 5 | 3 stable, 2 beta |
-| Tools | 3 | voiceover, music, sfx |
-| Commands | 10 | video, brand, template, skills, contribute, record-demo, generate-voiceover, scene-review, design, versions |
+| Tools | 5 | voiceover, music, sfx, redub, addmusic |
+| Commands | 11 | video, brand, template, skills, contribute, record-demo, generate-voiceover, scene-review, design, versions, redub |
 | Components | 9 | AnimatedBackground, SlideTransition, Label, Vignette, LogoWatermark, SplitScreen, NarratorPiP, Envelope, PointingHand |
 | Transitions | 7 | glitch, rgbSplit, zoomBlur, lightLeak, clockWipe, pixelate, checkerboard |
 | Examples | 2 | digital-samba-skill-demo, sprint-review-cho-oyu |

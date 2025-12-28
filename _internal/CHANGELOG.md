@@ -6,6 +6,36 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
+## 2025-12-28 (v0.6.0)
+
+### Added
+- **`redub.py --sync`** - Word-level time remapping for TTS synchronization
+  - Uses ElevenLabs `convert_with_timestamps` API for character-level alignment
+  - Uses Scribe word-level timestamps from original audio
+  - Builds segment mapping (configurable via `--segment-size`, default: 15 words)
+  - Applies variable speed per segment via FFmpeg filtergraph
+  - Fixes audio drift when TTS voice speaks at different pace than original
+  - Solves: TTS often starts fast and ends slow, causing 3-4+ second drift
+
+### Changed
+- Updated `CLAUDE.md` with Redub Sync Mode documentation
+- TTS duration now measured via ffprobe (more accurate than timestamp data)
+
+---
+
+## 2025-12-28 (v0.5.0)
+
+### Added
+- **`tools/addmusic.py`** - Add background music to existing videos
+  - Generate music via ElevenLabs or use existing audio file
+  - Options: `--music-volume`, `--fade-in`, `--fade-out`
+  - Works on any video file without requiring a project structure
+
+### Changed
+- Updated `CLAUDE.md` with addmusic documentation
+
+---
+
 ## 2025-12-28 (v0.4.0)
 
 ### Added

@@ -166,6 +166,9 @@ python tools/sfx.py --prompt "Thunder crack" --output thunder.mp3
 # Redub video with different voice (utility - no project needed)
 python tools/redub.py --input video.mp4 --voice-id VOICE_ID --output dubbed.mp4
 
+# Redub with word-level sync (recommended for different pacing)
+python tools/redub.py --input video.mp4 --voice-id VOICE_ID --sync --output dubbed.mp4
+
 # Add background music to video (utility - no project needed)
 python tools/addmusic.py --input video.mp4 --prompt "Subtle corporate" --output output.mp4
 python tools/addmusic.py --input video.mp4 --music bg.mp3 --music-volume 0.2 --fade-in 2 --fade-out 3 --output output.mp4
@@ -181,6 +184,33 @@ python tools/addmusic.py --input video.mp4 --music bg.mp3 --music-volume 0.2 --f
 | **Utility tools** | redub, addmusic | Quick transformations on existing videos |
 
 Utility tools work on any video file without requiring a project structure.
+
+### Redub Sync Mode
+
+The `--sync` flag enables word-level time remapping for redubbing. This is essential when the TTS voice speaks at a different pace than the original.
+
+**Why it's needed:**
+- ElevenLabs TTS pacing varies (often starts fast, ends slow)
+- Linear video slowdown can't compensate for variable drift
+- Without sync, audio can drift 3-4+ seconds by the end
+
+**How it works:**
+1. Scribe transcribes original audio with word-level timestamps
+2. TTS generates new audio with character-level timestamps (via `convert_with_timestamps`)
+3. Tool builds segment mapping (default: 15 words per segment)
+4. FFmpeg applies variable speed per segment using filtergraph
+5. Result: each word in video aligns with its TTS counterpart
+
+**Options:**
+```bash
+--sync              # Enable word-level sync
+--segment-size N    # Words per segment (default: 15)
+```
+
+**When to use:**
+- Redubbing to a voice with significantly different pacing
+- When simple audio replacement produces noticeable drift
+- For professional results where sync matters
 
 ## Video Production Workflow
 
