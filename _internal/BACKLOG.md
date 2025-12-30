@@ -162,6 +162,13 @@ ElevenLabs usage monitoring:
 - Track music minutes
 - Monthly usage summary
 
+### R2 Storage Monitoring
+Cloudflare R2 usage for dewatermark tool:
+- `--r2-status` flag: Show bucket size, object count, recent objects
+- Cleanup orphaned files from failed jobs
+- Usage trends and cost estimation
+- Auto-cleanup policies for old objects
+
 ---
 
 ## Improvements
