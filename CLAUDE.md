@@ -258,7 +258,7 @@ python tools/locate_watermark.py --list-presets
 3. Verify with `--region x,y,w,h --verify` across multiple frames
 4. Use confirmed region with `dewatermark.py`
 
-**Presets:** notebooklm, tiktok, stock-br, stock-bl, stock-center
+**Presets:** notebooklm, tiktok, sora, stock-br, stock-bl, stock-center
 
 **Options:**
 - `--samples N` - Number of frames to extract (default: 5)

@@ -63,6 +63,11 @@ PRESETS = {
         "region_1280x720": (440, 260, 400, 200),
         "region_1920x1080": (660, 390, 600, 300),
     },
+    "sora": {
+        "description": "OpenAI Sora - bottom-right 'SORA' text",
+        "region_1280x720": (1140, 643, 93, 33),
+        "region_1920x1080": (1710, 965, 140, 50),
+    },
 }
 
 
