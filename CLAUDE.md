@@ -236,6 +236,52 @@ See `docs/qwen-edit-patterns.md` and `.claude/skills/qwen-edit/` for prompting g
 
 Utility tools work on any video file without requiring a project structure.
 
+### AI Image Upscaling (Cloud GPU)
+
+The `upscale.py` tool uses Real-ESRGAN to upscale images 2x or 4x with AI enhancement.
+
+**Processing mode:**
+- **RunPod (cloud)** - Works from any machine, ~$0.01-0.05/image
+
+```bash
+# Upscale image 4x (default)
+python tools/upscale.py --input photo.jpg --output photo_4x.png --runpod
+
+# Use anime model for illustrations
+python tools/upscale.py --input art.png --output art_4x.png --model anime --runpod
+
+# With face enhancement (GFPGAN)
+python tools/upscale.py --input portrait.jpg --output portrait_4x.png --face-enhance --runpod
+
+# 2x upscale instead of 4x
+python tools/upscale.py --input photo.jpg --output photo_2x.png --scale 2 --runpod
+
+# Output as WebP instead of PNG
+python tools/upscale.py --input photo.jpg --output photo_4x.webp --format webp --runpod
+```
+
+**RunPod setup:**
+```bash
+# 1. Add API key to .env (if not already done)
+echo "RUNPOD_API_KEY=your_key_here" >> .env
+
+# 2. Run automated setup
+python tools/upscale.py --setup
+
+# Done! The endpoint ID is saved to .env as RUNPOD_UPSCALE_ENDPOINT_ID
+```
+
+**Models:**
+- `general` - RealESRGAN_x4plus (default, good for most images)
+- `anime` - RealESRGAN_x4plus_anime_6B (optimized for anime/illustration)
+- `photo` - realesr-general-x4v3 (alternative general model)
+
+**Options:**
+- `--scale 2|4` - Upscale factor (default: 4)
+- `--model general|anime|photo` - Model to use
+- `--face-enhance` - Use GFPGAN for face enhancement
+- `--format png|jpg|webp` - Output format (default: png)
+
 ### Watermark Removal (Cloud GPU)
 
 The `dewatermark.py` tool uses AI inpainting (ProPainter) to remove watermarks.
