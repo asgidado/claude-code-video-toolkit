@@ -23,6 +23,7 @@ Clone this repo, open it in Claude Code, and start creating videos.
 - [Python](https://python.org/) 3.9+
 - [FFmpeg](https://ffmpeg.org/)
 - [ElevenLabs API key](https://elevenlabs.io/) (for AI voiceovers)
+- [RunPod API key](https://runpod.io/) (optional, for AI image editing/upscaling)
 
 ### Setup
 
@@ -76,6 +77,7 @@ Claude Code has deep knowledge in:
 | **ffmpeg** | Media processing — format conversion, compression, resizing |
 | **playwright-recording** | Browser automation — record demos as video |
 | **frontend-design** | Visual design refinement for distinctive, production-grade aesthetics |
+| **qwen-edit** | AI image editing — prompting patterns and best practices |
 
 ### Commands
 
@@ -146,7 +148,7 @@ Create your own with `/brand`.
 
 ### Python Tools
 
-Audio and video tools in `tools/`:
+Audio, video, and image tools in `tools/`:
 
 ```bash
 # Generate voiceover
@@ -164,6 +166,13 @@ python tools/redub.py --input video.mp4 --voice-id VOICE_ID --output dubbed.mp4
 # Add background music to existing video
 python tools/addmusic.py --input video.mp4 --prompt "Subtle ambient" --output output.mp4
 
+# AI image editing (style transfer, backgrounds, custom prompts)
+python tools/image_edit.py --input photo.jpg --style cyberpunk
+python tools/image_edit.py --input photo.jpg --prompt "Add sunglasses"
+
+# AI image upscaling (2x/4x)
+python tools/upscale.py --input photo.jpg --output photo_4x.png --runpod
+
 # Remove watermarks (requires RunPod or NVIDIA GPU)
 python tools/dewatermark.py --input video.mp4 --preset sora --output clean.mp4 --runpod
 
@@ -176,10 +185,10 @@ python tools/locate_watermark.py --input video.mp4 --grid --output-dir ./review/
 | Type | Tools | Purpose |
 |------|-------|---------|
 | **Project** | voiceover, music, sfx | Used during video creation workflow |
-| **Utility** | redub, addmusic, notebooklm_brand | Quick transformations, no project needed |
-| **Optional** | dewatermark, locate_watermark | Requires cloud GPU or NVIDIA hardware |
+| **Utility** | redub, addmusic, notebooklm_brand, locate_watermark | Quick transformations, no project needed |
+| **Cloud GPU** | image_edit, upscale, dewatermark | AI processing via RunPod (see below) |
 
-See [docs/optional-components.md](docs/optional-components.md) for GPU tool setup.
+See [docs/runpod-setup.md](docs/runpod-setup.md) for Cloud GPU tool setup.
 
 ## Project Structure
 
