@@ -43,6 +43,38 @@ SADTALKER_DOCKER_IMAGE = "ghcr.io/conalmullan/video-toolkit-sadtalker:latest"
 SADTALKER_TEMPLATE_NAME = "video-toolkit-sadtalker"
 SADTALKER_ENDPOINT_NAME = "video-toolkit-sadtalker"
 
+# Processing time estimate: ~4 minutes per minute of audio + buffer
+PROCESSING_TIME_MULTIPLIER = 4
+PROCESSING_TIME_BUFFER = 120  # 2 minute buffer for cold start, upload, etc.
+
+
+def get_audio_duration(audio_path: str) -> float | None:
+    """Get audio duration in seconds using ffprobe."""
+    import subprocess
+    try:
+        result = subprocess.run(
+            [
+                "ffprobe", "-v", "quiet", "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1", audio_path
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            return float(result.stdout.strip())
+    except Exception:
+        pass
+    return None
+
+
+def calculate_timeout(audio_duration: float) -> int:
+    """Calculate appropriate timeout based on audio duration.
+
+    ~4 minutes processing per minute of audio, plus buffer for cold start.
+    """
+    processing_time = audio_duration * PROCESSING_TIME_MULTIPLIER
+    return int(processing_time + PROCESSING_TIME_BUFFER)
+
 
 def get_runpod_config() -> dict:
     """Get RunPod configuration from environment."""
@@ -350,6 +382,77 @@ def download_from_url(url: str, output_path: str, verbose: bool = True) -> bool:
         return False
 
 
+def retrieve_job_result(
+    job_id: str,
+    output_path: str,
+    verbose: bool = True,
+) -> dict:
+    """Retrieve results from a completed RunPod job.
+
+    Use this if a previous run timed out but the job completed on the server.
+    """
+    config = get_runpod_config()
+    api_key = config.get("api_key")
+    endpoint_id = config.get("endpoint_id")
+
+    if not api_key:
+        return {"error": "RUNPOD_API_KEY not set"}
+    if not endpoint_id:
+        return {"error": "RUNPOD_SADTALKER_ENDPOINT_ID not set"}
+
+    if verbose:
+        print(f"Retrieving job: {job_id}", file=sys.stderr)
+
+    # Get job status
+    url = f"https://api.runpod.ai/v2/{endpoint_id}/status/{job_id}"
+    try:
+        response = requests.get(
+            url,
+            headers={"Authorization": f"Bearer {api_key}"},
+            timeout=30,
+        )
+
+        if response.status_code != 200:
+            return {"error": f"Failed to get job status: HTTP {response.status_code}"}
+
+        data = response.json()
+        status = data.get("status")
+
+        if verbose:
+            print(f"  Status: {status}", file=sys.stderr)
+
+        if status != "COMPLETED":
+            return {"error": f"Job not completed. Status: {status}"}
+
+        output = data.get("output", {})
+
+        # Check for error in output
+        if output.get("error"):
+            return {"error": output["error"]}
+
+        # Get the video URL (presigned R2 URL)
+        video_url = output.get("video_url") or output.get("r2_url")
+        if not video_url:
+            return {"error": "No video_url in job output. Job may have failed."}
+
+        if verbose:
+            print(f"  Downloading from: {video_url[:80]}...", file=sys.stderr)
+
+        # Download the video
+        if not download_from_url(video_url, output_path, verbose=verbose):
+            return {"error": "Failed to download video"}
+
+        return {
+            "output": output_path,
+            "job_id": job_id,
+            "duration_seconds": output.get("duration_seconds"),
+            "chunks_processed": output.get("chunks_processed"),
+        }
+
+    except Exception as e:
+        return {"error": f"Failed to retrieve job: {e}"}
+
+
 def process_with_runpod(
     image_path: str,
     audio_path: str,
@@ -387,6 +490,18 @@ def process_with_runpod(
 
     if not r2_config:
         print("Warning: R2 not configured. Video will be returned as base64.", file=sys.stderr)
+
+    # Auto-calculate timeout if not specified
+    if timeout <= 0:
+        audio_duration = get_audio_duration(audio_path)
+        if audio_duration:
+            timeout = calculate_timeout(audio_duration)
+            if verbose:
+                print(f"Audio duration: {audio_duration:.1f}s, timeout: {timeout}s", file=sys.stderr)
+        else:
+            timeout = 900  # Default 15 minutes if we can't determine duration
+            if verbose:
+                print(f"Could not determine audio duration, using default timeout: {timeout}s", file=sys.stderr)
 
     if verbose:
         print(f"Using RunPod endpoint: {endpoint_id}", file=sys.stderr)
@@ -903,8 +1018,14 @@ Examples:
     parser.add_argument(
         "--timeout",
         type=int,
-        default=600,
-        help="RunPod job timeout in seconds (default: 600)",
+        default=0,
+        help="RunPod job timeout in seconds (default: auto-calculated from audio duration)",
+    )
+    parser.add_argument(
+        "--retrieve",
+        type=str,
+        metavar="JOB_ID",
+        help="Retrieve results from a completed job (e.g., if previous run timed out)",
     )
     parser.add_argument(
         "--setup",
@@ -936,6 +1057,18 @@ def main():
     # Handle --setup
     if args.setup:
         result = setup_runpod(gpu_id=args.setup_gpu, verbose=verbose)
+        if args.json:
+            print(json.dumps(result, indent=2))
+        if result.get("error"):
+            sys.exit(1)
+        sys.exit(0)
+
+    # Handle --retrieve (download results from a previous job)
+    if args.retrieve:
+        if not args.output:
+            print("Error: --output is required with --retrieve", file=sys.stderr)
+            sys.exit(1)
+        result = retrieve_job_result(args.retrieve, args.output, verbose=verbose)
         if args.json:
             print(json.dumps(result, indent=2))
         if result.get("error"):

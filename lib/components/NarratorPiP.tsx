@@ -44,6 +44,8 @@ export interface NarratorPiPProps {
   endFrame?: number;
   /** Whether narrator is enabled (default: true) */
   enabled?: boolean;
+  /** CSS object-position for video framing (default: 'center top') */
+  objectPosition?: string;
 }
 
 export const NarratorPiP: React.FC<NarratorPiPProps> = ({
@@ -55,6 +57,7 @@ export const NarratorPiP: React.FC<NarratorPiPProps> = ({
   startFrame = 0,
   endFrame,
   enabled = true,
+  objectPosition = 'center top',
 }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -113,9 +116,9 @@ export const NarratorPiP: React.FC<NarratorPiPProps> = ({
         startFrom={startFrame}
         style={{
           width: '100%',
-          height: '130%', // Slightly overflow to crop bottom (hands)
-          objectFit: 'cover',
-          objectPosition: 'center top',
+          height: '100%',
+          objectFit: 'contain', // Show full video, may letterbox
+          objectPosition: 'center bottom',
         }}
         muted
       />

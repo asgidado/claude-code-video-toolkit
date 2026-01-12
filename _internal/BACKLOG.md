@@ -121,12 +121,17 @@ The NarratorPiP component has two different APIs:
 - **sprint-review**: Props-based (`videoFile`, `position`, `size` as direct props)
 - **product-demo**: Config-based (`config` object containing all settings)
 
-Need to unify into a single API. Consider:
-- Simpler props-based API for most use cases
-- Optional config object for complex scenarios
-- Better timing control (startFrame, endFrame)
-- Green screen / background removal support
-- Multiple narrator support
+**Completed this session:**
+- [x] Added `objectPosition` prop for video framing control
+- [x] Changed default to `objectFit: contain` to show full video
+
+**Still needed:**
+- [ ] Unify into a single API
+- [ ] Better timing control (startFrame, endFrame)
+- [ ] Green screen / background removal support
+- [ ] Multiple narrator support
+- [ ] Auto-framing based on face detection
+- [ ] Aspect ratio prop for container shape
 
 ### Narrator Video Creation Guide
 Document best practices for creating narrator PiP videos:
@@ -207,6 +212,47 @@ Move GPU worker images from personal to org namespace:
 - Brand inheritance (extend another brand)
 - Dark/light mode variants per brand
 - Brand preview command
+
+---
+
+## SadTalker Refinements (In Progress)
+
+### Completed This Session
+- [x] `--retrieve JOB_ID` flag to download results from completed jobs
+- [x] Auto-timeout calculation based on audio duration (~4min/min + 2min buffer)
+- [x] Fixed `video_url` handling (was looking for `r2_url`)
+- [x] Updated docs with job recovery section
+
+### Still Needed
+- [ ] **Webhook support** (`--webhook URL`) - fire and forget, get notified when done
+- [ ] **Async mode** (`--async`) - submit and exit, retrieve later with job ID
+- [ ] **Job ID persistence** - save job ID to local file for crash recovery
+- [ ] **Progress streaming** - show chunk progress during long jobs
+- [ ] **R2 read permissions** - ensure credentials have Object Read & Write
+- [ ] **Image preprocessing** - auto-crop/center face for better framing
+- [ ] **Output reframing** - ffmpeg post-process to center face in output
+
+### Integration with NarratorPiP
+The current workflow has a framing issue:
+1. Source image has face positioned high in frame
+2. SadTalker preserves this framing
+3. NarratorPiP crops further, cutting off mouth
+
+**Solutions to explore:**
+- Pre-process source image to center face before SadTalker
+- Post-process SadTalker output to reframe/crop
+- Add face detection to auto-adjust NarratorPiP `objectPosition`
+- Document image requirements for good PiP framing
+
+### Current sadtalker.py Changes (uncommitted)
+```bash
+git diff tools/sadtalker.py  # ~150 lines of additions
+```
+- `get_audio_duration()` - ffprobe helper
+- `calculate_timeout()` - auto-timeout logic
+- `retrieve_job_result()` - download from job ID
+- `--retrieve` CLI flag
+- `--timeout` default changed to 0 (auto-calculate)
 
 ---
 
