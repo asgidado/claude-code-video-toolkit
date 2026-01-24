@@ -5,19 +5,19 @@
   "website": "https://www.digitalsamba.com",
 
   "colors": {
-    "primary": "#3771e0",
-    "primaryLight": "#5a8be8",
-    "primaryDark": "#264f9c",
-    "accent": "#f06859",
-    "textDark": "#323e66",
-    "textMedium": "#6a6d77",
-    "textLight": "#8a8d97",
+    "primary": "#ea580c",
+    "primaryLight": "#fb923c",
+    "primaryDark": "#c2410c",
+    "accent": "#3771e0",
+    "textDark": "#1e293b",
+    "textMedium": "#334155",
+    "textLight": "#64748b",
     "bgLight": "#ffffff",
     "bgAlt": "#fafafa",
-    "bgDark": "#323e66",
+    "bgDark": "#1a1a2e",
     "bgOverlay": "rgba(255, 255, 255, 0.95)",
     "divider": "#e2e8f0",
-    "shadow": "rgba(50, 62, 102, 0.12)"
+    "shadow": "rgba(0, 0, 0, 0.12)"
   },
 
   "fonts": {
