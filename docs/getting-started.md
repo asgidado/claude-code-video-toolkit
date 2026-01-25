@@ -89,7 +89,7 @@ If you prefer manual setup:
 | `/brand` | Brand profiles - list, edit, or create new |
 | `/template` | List available templates or create new ones |
 | `/record-demo` | Record browser interactions with Playwright |
-| `/generate-voiceover` | Generate AI voiceover from script |
+| `/generate-voiceover` | Generate AI voiceover from script (supports per-scene mode) |
 | `/redub` | Redub existing video with a different voice |
 | `/skills` | List installed skills or create new ones |
 | `/contribute` | Share improvements - issues, PRs, examples |

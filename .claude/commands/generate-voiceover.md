@@ -33,28 +33,44 @@ Before gathering configuration, check if we're in a project context:
 
    Only proceed if user explicitly chooses option 2.
 
-3. **If project context found and review complete:**
+3. **Check for per-scene scripts (preferred):**
+   Look for `public/audio/scenes/*.txt` files in the project directory.
+
+   If found:
+   ```
+   I see you're working on: {project.name}
+
+   Found per-scene scripts in public/audio/scenes/ (recommended):
+     - 01-title.txt (estimate: ~3s)
+     - 02-overview.txt (estimate: ~15s)
+     - 03-demo.txt (estimate: ~20s)
+     - 04-summary.txt (estimate: ~12s)
+
+   Total estimated: ~50 seconds of narration
+
+   Options:
+   1. Generate per-scene audio (recommended)
+   2. Generate single voiceover file (legacy)
+   ```
+
+   Default to option 1 (per-scene) when scene scripts exist.
+
+4. **If no scene scripts but VOICEOVER-SCRIPT.md exists:**
    ```
    I see you're working on: {project.name}
 
    Script: VOICEOVER-SCRIPT.md (ready)
    Audio status: ⬜ Not yet generated
-   Review status: ✅ Complete
 
-   Scenes requiring audio:
-     - Overview (15s estimated)
-     - Dark mode demo (20s estimated)
-     - Login flow (10s estimated)
-     - Summary (12s estimated)
-
-   Total estimated: ~57 seconds of narration
-
-   Ready to generate voiceover?
+   Options:
+   1. Split into scene scripts first (recommended for iteration)
+   2. Generate single voiceover file
    ```
 
-4. **After generation completes:**
+5. **After generation completes:**
    - Update `project.json`:
      - Set `audio.voiceover.status: "present"`
+     - If per-scene, set `audio.voiceover.mode: "per_scene"`
      - Transition `phase` if appropriate (review → audio → editing)
    - Add session entry
    - Regenerate project CLAUDE.md
@@ -64,7 +80,8 @@ Before gathering configuration, check if we're in a project context:
 ## Your Tasks
 
 1. **Detect Script Source**
-   Look for a script in this order:
+   Look for scripts in this order:
+   - Check for `public/audio/scenes/*.txt` files (per-scene mode)
    - Check if `VOICEOVER-SCRIPT.md` exists in the current working directory
    - Check if `VOICEOVER-SCRIPT.md` exists in parent directories (up to 3 levels)
    - If not found, ask the user to provide the script text or file path
@@ -72,17 +89,15 @@ Before gathering configuration, check if we're in a project context:
 2. **Gather Configuration**
    Use the AskUserQuestion tool to collect:
 
-   **Question 1 - Script Confirmation:**
-   If a script file was found, show the first 100 characters and ask to confirm.
+   **Question 1 - Generation Mode (if scene scripts found):**
    Options:
-   - Use this script
-   - Enter different text
-   - Specify different file path
+   - Per-scene generation (recommended) — each .txt becomes a .mp3
+   - Single voiceover file (legacy)
 
-   **Question 2 - Output Location:**
+   **Question 2 - Concat for SadTalker (if per-scene and narrator enabled):**
    Options:
-   - `public/audio/voiceover.mp3` (default, relative to project)
-   - Custom path (let user specify)
+   - Yes, concat for SadTalker narrator (recommended)
+   - No, keep separate files only
 
    **Question 3 - Voice Settings (optional):**
    Options:
@@ -90,30 +105,63 @@ Before gathering configuration, check if we're in a project context:
    - Customize settings
 
 3. **Execute Voiceover Generation**
-   Run the voiceover tool:
+
+   **Per-scene mode (recommended):**
    ```bash
-   cd /Users/conalmullan/work/video
-   python tools/voiceover.py \
-     --script "SCRIPT_PATH" \
-     --output "OUTPUT_PATH" \
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --scene-dir public/audio/scenes \
      --json
    ```
 
-   Or for custom text (pipe via stdin):
+   **With concat for SadTalker:**
    ```bash
-   cd /Users/conalmullan/work/video
-   echo "USER_TEXT" | python tools/voiceover.py \
-     --output "OUTPUT_PATH" \
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --scene-dir public/audio/scenes \
+     --concat public/audio/voiceover-concat.mp3 \
+     --json
+   ```
+
+   **Single-file mode (legacy):**
+   ```bash
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --script "SCRIPT_PATH" \
+     --output "public/audio/voiceover.mp3" \
      --json
    ```
 
 4. **Report Results**
-   Parse the JSON output and report:
-   - File path of the saved MP3
-   - Duration in seconds
-   - Frame count at 30fps
-   - The exact value to use in config: `durationSeconds: X`
-   - Character count (for ElevenLabs quota awareness)
+
+   **Per-scene results:**
+   ```
+   Per-scene audio generated:
+     ✅ 01-title.mp3 (3.2s)
+     ✅ 02-overview.mp3 (15.4s)
+     ✅ 03-demo.mp3 (20.1s)
+     ✅ 04-summary.mp3 (11.8s)
+
+   Total: 50.5s (1515 frames @ 30fps)
+   Characters: 892
+
+   Concatenated: public/audio/voiceover-concat.mp3 (50.5s)
+
+   Next steps:
+   1. Update sprint-config.ts with audioFile for each scene
+   2. If using narrator, run SadTalker with voiceover-concat.mp3
+   ```
+
+   **Single-file results:**
+   ```
+   Voiceover generated:
+     File: public/audio/voiceover.mp3
+     Duration: 50.5s (1515 frames @ 30fps)
+     Characters: 892
+
+   For your config:
+     audio: { voiceoverFile: 'voiceover.mp3' }
+   ```
 
 ## Tool Location
 
@@ -130,6 +178,29 @@ Before gathering configuration, check if we're in a project context:
 | style | 0.0 | 0-1 | Higher = more stylistic variation |
 | speed | 1.0 | 0.5-2.0 | Speech speed multiplier |
 
+## Per-Scene Script Structure
+
+When using per-scene mode, create `.txt` files in `public/audio/scenes/`:
+
+```
+public/audio/scenes/
+├── 01-title.txt       → 01-title.mp3
+├── 02-overview.txt    → 02-overview.mp3
+├── 03-demo.txt        → 03-demo.mp3
+├── 04-summary.txt     → 04-summary.mp3
+└── 05-credits.txt     → 05-credits.mp3
+```
+
+Each file contains just the narration text for that scene. Benefits:
+- Regenerate individual scenes without re-doing everything
+- Scene durations match audio naturally (no offset calculations)
+- Each `<Audio>` starts at frame 0 within its `Series.Sequence`
+
+**To split an existing VOICEOVER-SCRIPT.md:**
+1. Create the `public/audio/scenes/` directory
+2. Copy each scene's narration to a numbered `.txt` file
+3. Use naming like `01-title.txt`, `02-overview.txt` for sorted order
+
 ## Script Format Tips
 
 Share these tips with the user:
@@ -143,9 +214,25 @@ Share these tips with the user:
 - If `ELEVENLABS_API_KEY` is missing, tell user to add it to `.env`
 - If voice ID is missing, tell user to set `config.voiceId` in `toolkit-registry.json`
 - If script file not found, offer to create a template
+- If scene directory empty, prompt to create scene scripts first
 
 ## Example Output
 
+**Per-scene mode:**
+```
+Per-scene audio generated:
+  ✅ 01-title.mp3 (3.2s)
+  ✅ 02-overview.mp3 (15.4s)
+  ✅ 03-demo.mp3 (20.1s)
+  ✅ 04-summary.mp3 (11.8s)
+
+Total: 50.5s (1515 frames @ 30fps)
+Characters: 892
+
+Concatenated: public/audio/voiceover-concat.mp3 (50.5s)
+```
+
+**Single-file mode (legacy):**
 ```
 Voiceover generated successfully!
 

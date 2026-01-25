@@ -6,6 +6,31 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
+## 2026-01-25 (v0.9.2)
+
+### Added
+- **Per-scene voiceover generation** - New recommended workflow for audio
+  - `voiceover.py --scene-dir` processes all `.txt` files in a directory
+  - `voiceover.py --concat` joins scene audio for SadTalker narrator
+  - Each scene's `<Audio>` starts at frame 0 within its `Series.Sequence`
+  - Regenerate individual scenes without re-doing the whole video
+  - Scene durations match audio naturally (no manual offset calculations)
+
+- **Sprint-review template per-scene audio support**
+  - `audioFile` field on `DemoConfig`, `info`, `overview`, `summary`
+  - SprintReview.tsx renders per-scene `<Audio>` elements
+  - Backward compatible: global voiceover track still works
+
+- **Updated `/generate-voiceover` command**
+  - Detects `public/audio/scenes/*.txt` and offers per-scene mode
+  - Per-scene is now the default when scene scripts exist
+  - Concat option for SadTalker integration
+
+### Changed
+- Updated documentation (CLAUDE.md, README.md, getting-started.md)
+
+---
+
 ## 2025-12-30 (v0.7.0)
 
 ### Added

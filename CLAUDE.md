@@ -155,8 +155,14 @@ Audio and video tools in `tools/`. Config from `_internal/toolkit-registry.json`
 # Setup
 pip install -r tools/requirements.txt
 
-# Voiceover generation
+# Voiceover generation (single file - legacy)
 python tools/voiceover.py --script SCRIPT.md --output out.mp3
+
+# Per-scene voiceover generation (recommended)
+python tools/voiceover.py --scene-dir public/audio/scenes --json
+
+# Per-scene with concat for SadTalker narrator
+python tools/voiceover.py --scene-dir public/audio/scenes --concat public/audio/voiceover-concat.mp3
 
 # Background music
 python tools/music.py --prompt "Subtle corporate" --duration 120 --output music.mp3

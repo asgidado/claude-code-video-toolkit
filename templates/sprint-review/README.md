@@ -68,6 +68,46 @@ demos: [
 
 ### 3. Add Audio (Optional)
 
+**Per-scene audio (recommended):**
+
+Create script files in `public/audio/scenes/`:
+```
+public/audio/scenes/
+├── 01-title.txt       → generates 01-title.mp3
+├── 02-overview.txt    → generates 02-overview.mp3
+├── 03-demo.txt        → generates 03-demo.mp3
+└── 04-summary.txt     → generates 04-summary.mp3
+```
+
+Generate with:
+```bash
+python tools/voiceover.py --scene-dir public/audio/scenes --json
+```
+
+Then reference in config:
+```typescript
+info: {
+  name: 'Sprint Name',
+  // ...
+  audioFile: 'scenes/01-title.mp3',
+},
+overview: {
+  title: "What's New",
+  items: [...],
+  audioFile: 'scenes/02-overview.mp3',
+},
+demos: [
+  { videoFile: 'demo.mp4', audioFile: 'scenes/03-demo.mp3', ... }
+],
+```
+
+Benefits:
+- Regenerate individual scenes without re-doing everything
+- Scene durations match audio naturally (no offset calculations)
+- Each `<Audio>` starts at frame 0 within its `Series.Sequence`
+
+**Single voiceover (legacy):**
+
 Place audio files in `public/audio/`:
 - `voiceover.mp3` - Main narration
 - `background-music.mp3` - Background track

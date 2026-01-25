@@ -193,6 +193,22 @@ Move GPU worker images from personal to org namespace:
 
 ## Improvements
 
+### Per-Scene Voiceover Generation ✅ IMPLEMENTED
+Tested in `android-screenshare-sprint` (Jan 2026). Now promoted to default workflow.
+
+**Implementation complete:**
+- [x] `voiceover.py` supports `--scene-dir` for processing .txt files in a directory
+- [x] `voiceover.py` supports `--concat` for ffmpeg concatenation (for SadTalker)
+- [x] `audioFile` field added to DemoConfig, info, overview, summary, credits configs
+- [x] SprintReview.tsx renders per-scene `<Audio>` within each `Series.Sequence`
+- [x] Backward compatibility: global voiceover track still works when no per-scene audio
+- [x] `/generate-voiceover` command updated to detect and prefer per-scene mode
+- [x] Documentation updated (CLAUDE.md, README.md, getting-started.md)
+
+**Remaining ideas (not blocking):**
+- [ ] Store concat list file in project for reproducibility
+- [ ] Auto-split VOICEOVER-SCRIPT.md into scene scripts
+
 ### Voice Management
 - Support multiple voices per project
 - Voice settings presets (narrator, character, etc.)

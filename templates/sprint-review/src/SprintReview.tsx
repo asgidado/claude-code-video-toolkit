@@ -13,13 +13,24 @@ import { TitleSlide, OverviewSlide, SummarySlide, EndCredits } from './component
 import { DemoSection, SplitScreen } from './components/demos';
 
 export const SprintReview: React.FC = () => {
-  const { demos, audio, narrator, mazeDecoration } = sprintConfig;
+  const { info, overview, demos, summary, audio, narrator, mazeDecoration } = sprintConfig;
   const staticFiles = getStaticFiles();
 
-  // Check which audio files exist
-  const hasVoiceover = audio.voiceoverFile && staticFiles.some((f) => f.name === `audio/${audio.voiceoverFile}`);
-  const hasBackgroundMusic = audio.backgroundMusicFile && staticFiles.some((f) => f.name === `audio/${audio.backgroundMusicFile}`);
-  const hasChime = audio.chimeFile && staticFiles.some((f) => f.name === `audio/${audio.chimeFile}`);
+  // Helper to check if an audio file exists
+  const audioExists = (path: string | undefined) =>
+    path && staticFiles.some((f) => f.name === `audio/${path}`);
+
+  // Check which global audio files exist
+  const hasVoiceover = audioExists(audio.voiceoverFile);
+  const hasBackgroundMusic = audioExists(audio.backgroundMusicFile);
+  const hasChime = audioExists(audio.chimeFile);
+
+  // Check for per-scene audio (any scene has audioFile configured)
+  const hasPerSceneAudio =
+    audioExists(info.audioFile) ||
+    audioExists(overview.audioFile) ||
+    audioExists(summary.audioFile) ||
+    demos.some((d) => audioExists(d.audioFile));
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -41,6 +52,9 @@ export const SprintReview: React.FC = () => {
         <Series>
           {/* Title Card - 5 seconds */}
           <Series.Sequence durationInFrames={seconds(5)}>
+            {audioExists(info.audioFile) && (
+              <Audio src={staticFile(`audio/${info.audioFile}`)} />
+            )}
             <SlideTransition durationInFrames={seconds(5)} style="zoom">
               <TitleSlide />
             </SlideTransition>
@@ -48,6 +62,9 @@ export const SprintReview: React.FC = () => {
 
           {/* Overview - 15 seconds */}
           <Series.Sequence durationInFrames={seconds(15)}>
+            {audioExists(overview.audioFile) && (
+              <Audio src={staticFile(`audio/${overview.audioFile}`)} />
+            )}
             <SlideTransition durationInFrames={seconds(15)} style="zoom">
               <OverviewSlide />
             </SlideTransition>
@@ -56,6 +73,9 @@ export const SprintReview: React.FC = () => {
           {/* Dynamic demo sections from config */}
           {demos.map((demo, index) => (
             <Series.Sequence key={index} durationInFrames={seconds(demo.durationSeconds)}>
+              {audioExists(demo.audioFile) && (
+                <Audio src={staticFile(`audio/${demo.audioFile}`)} />
+              )}
               <SlideTransition durationInFrames={seconds(demo.durationSeconds)} style="blur-fade">
                 {demo.type === 'split' ? (
                   <SplitScreen
@@ -84,6 +104,9 @@ export const SprintReview: React.FC = () => {
 
           {/* Summary - 15 seconds */}
           <Series.Sequence durationInFrames={seconds(15)}>
+            {audioExists(summary.audioFile) && (
+              <Audio src={staticFile(`audio/${summary.audioFile}`)} />
+            )}
             <SlideTransition durationInFrames={seconds(15)} style="zoom" transitionDuration={20}>
               <SummarySlide />
             </SlideTransition>
@@ -95,8 +118,8 @@ export const SprintReview: React.FC = () => {
           </Series.Sequence>
         </Series>
 
-        {/* Voiceover audio track */}
-        {hasVoiceover && (
+        {/* Global voiceover audio track (legacy mode - used when no per-scene audio) */}
+        {hasVoiceover && !hasPerSceneAudio && (
           <Sequence from={audio.voiceoverStartFrame || 0}>
             <Audio src={staticFile(`audio/${audio.voiceoverFile}`)} />
           </Sequence>

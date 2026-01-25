@@ -49,6 +49,8 @@ export interface DemoConfig {
   rightStartFrom?: number;
   leftLabel?: string;
   rightLabel?: string;
+  /** Per-scene audio file (e.g., 'scenes/03-demo.mp3'). Renders Audio within the scene's Sequence. */
+  audioFile?: string;
 }
 
 export interface CreditSection {
@@ -74,18 +76,26 @@ export interface MazeDecorationConfig {
 }
 
 export interface SprintConfig {
-  info: SprintInfo;
+  info: SprintInfo & {
+    /** Per-scene audio file for title slide (e.g., 'scenes/01-title.mp3') */
+    audioFile?: string;
+  };
   overview: {
     title: string;        // e.g., "What's New in v4.0.2"
     items: OverviewItem[];
+    /** Per-scene audio file for overview slide (e.g., 'scenes/02-overview.mp3') */
+    audioFile?: string;
   };
   demos: DemoConfig[];
   summary: {
     stats: StatItem[];
     screenshotFile?: string;
+    /** Per-scene audio file for summary slide (e.g., 'scenes/summary.mp3') */
+    audioFile?: string;
   };
   credits: CreditSection[];
   audio: {
+    /** Single voiceover file (legacy mode). Use per-scene audioFile instead for new projects. */
     voiceoverFile?: string;
     voiceoverStartFrame?: number;
     backgroundMusicFile?: string;
