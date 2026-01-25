@@ -25,7 +25,7 @@ Clone this repo, open it in Claude Code, and start creating videos.
 - [Python](https://python.org/) 3.9+
 - [FFmpeg](https://ffmpeg.org/)
 - [ElevenLabs API key](https://elevenlabs.io/) (for AI voiceovers)
-- [RunPod API key](https://runpod.io/) (optional, for AI image editing/upscaling)
+- [RunPod API key](https://runpod.io/) (optional, for AI image editing, upscaling, watermark removal, talking head generation)
 
 ### Setup
 
@@ -113,7 +113,7 @@ See `examples/` for finished projects you can learn from (oldest first, showing 
 | 2025-12-05 | [sprint-review-cho-oyu](https://demos.digitalsamba.com/video/sprint-review.mp4) | iOS sprint review with demos |
 | 2025-12-10 | [digital-samba-skill-demo](https://demos.digitalsamba.com/video/digital-samba-skill-demo.mp4) | Product demo showcasing Claude Code skill |
 | 2026-01-22 | [ds-remote-mcp](https://demos.digitalsamba.com/video/ds-remote-mcp.mp4) | Remote MCP server demo *(the jazz background music is a joke)* |
-| 2026-01-25 | [schlumbergera](https://demos.digitalsamba.com/video/schlumbergera.mp4) | Latest demo video |
+| 2026-01-25 | [schlumbergera](https://demos.digitalsamba.com/video/schlumbergera.mp4) | Android sprint review video |
 
 ### Scene Transitions
 
@@ -235,6 +235,8 @@ Cloud GPU tools use pre-built Docker images deployed to RunPod serverless:
 | sadtalker | `ghcr.io/conalmullan/video-toolkit-sadtalker:latest` | 24GB (RTX 4090) |
 
 Dockerfiles and handlers are in `docker/`. Run `python tools/<tool>.py --setup` to auto-deploy.
+
+**Cost:** RunPod is pay-per-second with no minimums. Typical usage is ~$0.01-0.15 per job. Even with heavy experimenting, expect to spend less than $10/month.
 
 ## Project Structure
 
