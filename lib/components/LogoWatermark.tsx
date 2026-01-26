@@ -21,6 +21,8 @@ export interface LogoWatermarkProps {
   maxOpacity?: number;
   /** Position in frame. Default: top-left */
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  /** Logo size in pixels. Default: 32 */
+  size?: number;
 }
 
 export const LogoWatermark: React.FC<LogoWatermarkProps> = ({
@@ -30,6 +32,7 @@ export const LogoWatermark: React.FC<LogoWatermarkProps> = ({
   fadeInDuration = 30,
   maxOpacity = 0.6,
   position = 'top-left',
+  size = 32,
 }) => {
   const frame = useCurrentFrame();
   const theme = useTheme();
@@ -62,8 +65,8 @@ export const LogoWatermark: React.FC<LogoWatermarkProps> = ({
       <Img
         src={staticFile(logoSrc)}
         style={{
-          width: 32,
-          height: 32,
+          width: size,
+          height: size,
           objectFit: 'contain',
         }}
       />
