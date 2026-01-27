@@ -67,12 +67,15 @@ Claude Code has deep knowledge in these domains via `.claude/skills/`:
 
 | Skill | Status | Purpose |
 |-------|--------|---------|
-| remotion | stable | Video compositions, animations, rendering |
+| remotion-official | stable | Core Remotion framework (synced from [remotion-dev/skills](https://github.com/remotion-dev/skills)) |
+| remotion | stable | Toolkit-specific: custom transitions, shared components, conventions |
 | elevenlabs | stable | TTS, voice cloning, music, SFX |
 | ffmpeg | beta | Asset conversion, compression |
 | playwright-recording | beta | Browser demo capture |
 | frontend-design | stable | Visual design refinement for slides |
 | qwen-edit | stable | AI image editing prompting patterns |
+
+> **Note:** `remotion-official` is synced weekly from upstream via GitHub Actions. See `docs/remotion-skills-sync.md` for details.
 
 ## Commands
 
