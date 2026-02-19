@@ -175,7 +175,7 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 |----------|-------|-------|
 | Templates | 2 | sprint-review, product-demo |
 | Brands | 2 | default, digital-samba |
-| Skills | 6 | 4 stable, 2 beta |
+| Skills | 7 | 5 stable, 2 beta |
 | Tools | 10 | voiceover, music, sfx, redub, addmusic, dewatermark, locate_watermark, notebooklm_brand, image_edit, upscale |
 | Commands | 11 | video, brand, template, skills, contribute, record-demo, generate-voiceover, scene-review, design, versions, redub |
 | Components | 9 | AnimatedBackground, SlideTransition, Label, Vignette, LogoWatermark, SplitScreen, NarratorPiP, Envelope, PointingHand |

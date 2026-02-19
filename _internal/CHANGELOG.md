@@ -6,6 +6,19 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
+## 2026-02-19 (v0.9.3)
+
+### Added
+- **Official Remotion skills** — Synced 33 rule files from [remotion-dev/skills](https://github.com/remotion-dev/skills) into `.claude/skills/remotion-official/`
+- **Weekly sync workflow** — GitHub Actions checks upstream every Monday and opens a PR if files changed
+- **Sync documentation** — `docs/remotion-skills-sync.md` explaining the split and sync process
+
+### Changed
+- **Remotion skill split** — Custom `remotion` skill trimmed from ~470 to ~160 lines, now covers only toolkit-specific patterns (transitions, components, conventions). Core framework knowledge deferred to `remotion-official`
+- Updated CLAUDE.md skills table with both remotion skills
+
+---
+
 ## 2026-01-25 (v0.9.2)
 
 ### Added
