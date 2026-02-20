@@ -1,7 +1,12 @@
 import React from 'react';
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig, getStaticFiles } from 'remotion';
 import { useTheme } from '../../config/theme';
-import { sprintConfig } from '../../config/sprint-config';
+import { hexToRgba } from '../../../../../lib/components/utils';
+import type { SummaryContent } from '../../config/types';
+
+interface SummarySlideProps {
+  content: SummaryContent;
+}
 
 /**
  * SVG circular progress ring with animated fill
@@ -130,14 +135,13 @@ const ProgressRing: React.FC<{
   );
 };
 
-export const SummarySlide: React.FC = () => {
+export const SummarySlide: React.FC<SummarySlideProps> = ({ content }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const theme = useTheme();
-  const { summary } = sprintConfig;
 
   const staticFiles = getStaticFiles();
-  const screenshotPath = summary.screenshotFile ? `images/${summary.screenshotFile}` : null;
+  const screenshotPath = content.screenshotFile ? `images/${content.screenshotFile}` : null;
   const hasScreenshot = screenshotPath && staticFiles.some((f) => f.name === screenshotPath);
 
   // Header/title fade
@@ -146,7 +150,7 @@ export const SummarySlide: React.FC = () => {
   });
 
   // Determine max value for ring proportions
-  const maxStatValue = Math.max(...summary.stats.map((s) => s.value), 1);
+  const maxStatValue = Math.max(...content.stats.map((s) => s.value), 1);
 
   // Phase 2: Screenshot overlay (starts at frame 150)
   const screenshotStart = 150;
@@ -214,7 +218,7 @@ export const SummarySlide: React.FC = () => {
 
         {/* Progress rings */}
         <div style={{ display: 'flex', gap: 100 }}>
-          {summary.stats.map((stat, index) => (
+          {content.stats.map((stat, index) => (
             <ProgressRing
               key={index}
               value={stat.value}
@@ -255,10 +259,3 @@ export const SummarySlide: React.FC = () => {
     </AbsoluteFill>
   );
 };
-
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}

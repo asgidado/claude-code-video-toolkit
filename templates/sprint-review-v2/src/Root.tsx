@@ -1,6 +1,6 @@
 import { Composition } from 'remotion';
 import { SprintReview } from './SprintReview';
-import { videoConfig } from './config/sprint-config';
+import { videoConfig, totalDurationInFrames } from './config/sprint-config';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="SprintReviewV2"
         component={SprintReview}
-        durationInFrames={videoConfig.fps * videoConfig.durationSeconds}
+        durationInFrames={totalDurationInFrames}
         fps={videoConfig.fps}
         width={videoConfig.width}
         height={videoConfig.height}

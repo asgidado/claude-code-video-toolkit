@@ -1,10 +1,12 @@
 import React from 'react';
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig, getStaticFiles } from 'remotion';
 import { useTheme } from '../../config/theme';
-import { sprintConfig } from '../../config/sprint-config';
+import { hexToRgba } from '../../../../../lib/components/utils';
+import type { TitleContent, SprintInfo } from '../../config/types';
 
 interface TitleSlideProps {
-  logoFile?: string;
+  content: TitleContent;
+  info: SprintInfo;
 }
 
 /**
@@ -49,7 +51,7 @@ const SpringWords: React.FC<{
 };
 
 /**
- * Highlight wipe — colored bar sweeps across the text
+ * Highlight wipe - colored bar sweeps across the text
  */
 const HighlightWipe: React.FC<{
   children: React.ReactNode;
@@ -84,15 +86,13 @@ const HighlightWipe: React.FC<{
   );
 };
 
-export const TitleSlide: React.FC<TitleSlideProps> = ({
-  logoFile = 'images/logo.png',
-}) => {
+export const TitleSlide: React.FC<TitleSlideProps> = ({ content, info }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const theme = useTheme();
-  const { info } = sprintConfig;
+  const logoFile = content.logoFile ?? 'images/logo.png';
 
-  // Slow Ken Burns zoom drift (1.0 → 1.03 over full scene)
+  // Slow Ken Burns zoom drift (1.0 -> 1.03 over full scene)
   const kenBurns = interpolate(frame, [0, 150], [1, 1.03], {
     extrapolateRight: 'clamp',
   });
@@ -181,7 +181,7 @@ export const TitleSlide: React.FC<TitleSlideProps> = ({
           </div>
         )}
 
-        {/* Product name — word-by-word spring entrance */}
+        {/* Product name - word-by-word spring entrance */}
         <h1 style={{ margin: 0, textAlign: 'center' }}>
           <SpringWords
             text={info.product}
@@ -251,10 +251,3 @@ export const TitleSlide: React.FC<TitleSlideProps> = ({
     </AbsoluteFill>
   );
 };
-
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}

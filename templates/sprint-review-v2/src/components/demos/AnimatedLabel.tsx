@@ -1,6 +1,7 @@
 import React from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { useTheme } from '../../config/theme';
+import { hexToRgba } from '../../../../../lib/components/utils';
 
 interface AnimatedLabelProps {
   text: string;
@@ -95,9 +96,3 @@ export const AnimatedLabel: React.FC<AnimatedLabelProps> = ({ text, jiraRef }) =
   );
 };
 
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}

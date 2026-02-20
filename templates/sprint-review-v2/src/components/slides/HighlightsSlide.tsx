@@ -1,10 +1,14 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { useTheme } from '../../config/theme';
-import { sprintConfig } from '../../config/sprint-config';
+import type { HighlightsContent } from '../../config/types';
+
+interface HighlightsSlideProps {
+  content: HighlightsContent;
+}
 
 /**
- * Typewriter effect — reveals text character by character
+ * Typewriter effect - reveals text character by character
  */
 const Typewriter: React.FC<{
   text: string;
@@ -36,7 +40,7 @@ const Typewriter: React.FC<{
 };
 
 /**
- * Highlight wipe for overview items
+ * Highlight wipe for items
  */
 const ItemHighlightWipe: React.FC<{
   children: React.ReactNode;
@@ -67,11 +71,10 @@ const ItemHighlightWipe: React.FC<{
   );
 };
 
-export const OverviewSlide: React.FC = () => {
+export const HighlightsSlide: React.FC<HighlightsSlideProps> = ({ content }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const theme = useTheme();
-  const { overview } = sprintConfig;
 
   // Title fade in
   const titleOpacity = interpolate(frame, [15, 40], [0, 1], {
@@ -103,7 +106,7 @@ export const OverviewSlide: React.FC = () => {
           minHeight: 42,
         }}
       >
-        <Typewriter text="Sprint Overview" startFrame={0} charsPerFrame={1.2} />
+        <Typewriter text="Sprint Highlights" startFrame={0} charsPerFrame={1.2} />
       </p>
 
       {/* Title */}
@@ -117,12 +120,12 @@ export const OverviewSlide: React.FC = () => {
           opacity: titleOpacity,
         }}
       >
-        {overview.title}
+        {content.title}
       </h1>
 
       {/* Items with spring stagger + highlight wipes */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 34 }}>
-        {overview.items.map((item, index) => {
+        {content.items.map((item, index) => {
           const itemDelay = 50 + index * 60;
 
           // Spring entrance

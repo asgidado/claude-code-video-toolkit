@@ -1,22 +1,25 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
 import { useTheme } from '../../config/theme';
-import { sprintConfig } from '../../config/sprint-config';
+import { hexToRgba } from '../../../../../lib/components/utils';
+import type { CreditsContent, SprintInfo } from '../../config/types';
 
-export const EndCredits: React.FC = () => {
+interface EndCreditsProps {
+  content: CreditsContent;
+  info: SprintInfo;
+}
+
+export const EndCredits: React.FC<EndCreditsProps> = ({ content, info }) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
   const theme = useTheme();
-  const { credits, info } = sprintConfig;
+  const { sections } = content;
 
   // Calculate total content height for scroll
-  // Each section: category (~40px) + items (~45px each) + gap (60px)
   const totalContentHeight =
-    credits.reduce((acc, section) => acc + 40 + section.items.length * 45 + 60, 0) + 200;
+    sections.reduce((acc, section) => acc + 40 + section.items.length * 45 + 60, 0) + 200;
 
   // Classic upward scroll driven by frame
-  // Start below viewport, scroll up through and past
-  const scrollDistance = height + totalContentHeight;
   const scrollY = interpolate(frame, [30, 850], [height * 0.8, -totalContentHeight], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -120,7 +123,7 @@ export const EndCredits: React.FC = () => {
         </h1>
 
         {/* Credit sections */}
-        {credits.map((section, sectionIndex) => (
+        {sections.map((section, sectionIndex) => (
           <div
             key={sectionIndex}
             style={{
@@ -185,10 +188,3 @@ export const EndCredits: React.FC = () => {
     </AbsoluteFill>
   );
 };
-
-function hexToRgba(hex: string, alpha: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
