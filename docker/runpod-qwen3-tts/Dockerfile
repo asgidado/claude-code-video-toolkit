@@ -10,6 +10,9 @@
 
 FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
 
+# Install ffmpeg for WAV→MP3 conversion
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+
 # Install torchaudio (matching PyTorch 2.4.0 from base image)
 RUN pip install --no-cache-dir torchaudio==2.4.0
 
