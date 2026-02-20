@@ -17,6 +17,9 @@ export type { MazeDecorationProps } from './MazeDecoration';
 export { Vignette } from './Vignette';
 export type { VignetteProps } from './Vignette';
 
+export { FilmGrain } from './FilmGrain';
+export type { FilmGrainProps } from './FilmGrain';
+
 export { LogoWatermark } from './LogoWatermark';
 export type { LogoWatermarkProps } from './LogoWatermark';
 
