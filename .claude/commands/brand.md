@@ -151,15 +151,25 @@ Place your logo at:
 ### Step 5: Voice Settings (Optional)
 
 ```
-Configure ElevenLabs voice settings?
+Configure voice settings?
 
-  1. Yes, I have a voice ID
-  2. Skip for now (can configure later)
+  1. ElevenLabs — I have a voice ID
+  2. Qwen3-TTS — built-in speaker (free, self-hosted)
+  3. Qwen3-TTS — voice clone (record your own voice)
+  4. Skip for now (can configure later)
 
-If yes:
+Option 1 (ElevenLabs):
   Voice ID: ___
   Stability: (default: 0.75)
   Similarity boost: (default: 0.9)
+
+Option 2 (Qwen3-TTS built-in):
+  Speaker: Ryan, Aiden (EN), Vivian, Serena (ZH), Ono_Anna (JA), Sohee (KO)
+  Language: Auto (default)
+  Instruction: (optional, e.g., "Speak warmly")
+
+Option 3 (Qwen3-TTS clone):
+  → Run /voice-clone to set up a cloned voice for this brand
 ```
 
 ### Step 6: Create Brand Profile

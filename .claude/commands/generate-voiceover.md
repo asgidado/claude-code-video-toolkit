@@ -4,7 +4,7 @@ description: Generate AI voiceover from script
 
 # Generate Voiceover
 
-Help me generate a voiceover for a Remotion video project using ElevenLabs TTS.
+Help me generate a voiceover for a Remotion video project using ElevenLabs or Qwen3-TTS.
 
 ## Project Integration
 
@@ -89,24 +89,70 @@ Before gathering configuration, check if we're in a project context:
 2. **Gather Configuration**
    Use the AskUserQuestion tool to collect:
 
-   **Question 1 - Generation Mode (if scene scripts found):**
+   **Question 1 - TTS Provider:**
+   Options:
+   - ElevenLabs (default) — high quality, paid API
+   - Qwen3-TTS — self-hosted via RunPod, free/cheap, voice cloning
+
+   If Qwen3-TTS is selected, check the project brand (from `project.json`) for a clone profile:
+   1. Load `brands/{brand}/voice.json`
+   2. If `qwen3.clone` exists and `refAudio` file is present:
+      ```
+      Clone profile detected for brand '{brand}':
+        Reference: assets/voice-reference.m4a
+        Transcript: "Welcome to this video walkthrough..."
+
+        1. Use cloned voice (recommended)
+        2. Use built-in speaker instead
+        3. Set up a new clone → /voice-clone
+      ```
+   3. If no clone profile, offer built-in speakers as usual
+
+   **Question 2 - Generation Mode (if scene scripts found):**
    Options:
    - Per-scene generation (recommended) — each .txt becomes a .mp3
    - Single voiceover file (legacy)
 
-   **Question 2 - Concat for SadTalker (if per-scene and narrator enabled):**
+   **Question 3 - Concat for SadTalker (if per-scene and narrator enabled):**
    Options:
    - Yes, concat for SadTalker narrator (recommended)
    - No, keep separate files only
 
-   **Question 3 - Voice Settings (optional):**
+   **Question 4 - Voice Settings:**
+
+   *If ElevenLabs selected:*
    Options:
    - Use defaults (stability: 0.85, similarity: 0.95)
    - Customize settings
 
+   *If Qwen3-TTS selected with cloned voice:*
+   Skip tone selection entirely. Show:
+   ```
+   Using cloned voice from brand '{brand}' — tone is determined by your reference recording.
+
+   Tip: Want a different feel? Run /voice-clone to record a new reference
+   with the tone you're after (e.g., warmer, more energetic). You can have
+   multiple clone profiles across brands.
+   ```
+
+   *If Qwen3-TTS selected with built-in speaker (no clone):*
+   - Speaker name (default: Ryan). Options: Ryan, Aiden (EN), Vivian, Serena (ZH), Ono_Anna (JA), Sohee (KO)
+   - Voice tone (choose one):
+     1. Neutral (no instruction)
+     2. Warm — friendly, conversational
+     3. Professional — clear, measured
+     4. Excited — enthusiastic, energetic
+     5. Calm — soothing, relaxed
+     6. Serious — authoritative, gravitas
+     7. Storyteller — captivating narrator
+     8. Tutorial — patient, step-by-step
+     9. Custom instruction (type your own)
+
+   Note: Per-scene tone overrides are supported with built-in speakers. Add `[tone: excited]` or `[instruct: Whisper gently]` as the first line of any scene `.txt` file. These are ignored when using a cloned voice.
+
 3. **Execute Voiceover Generation**
 
-   **Per-scene mode (recommended):**
+   **ElevenLabs — Per-scene mode (recommended):**
    ```bash
    cd PROJECT_DIR
    python /Users/conalmullan/work/video/tools/voiceover.py \
@@ -114,7 +160,7 @@ Before gathering configuration, check if we're in a project context:
      --json
    ```
 
-   **With concat for SadTalker:**
+   **ElevenLabs — With concat for SadTalker:**
    ```bash
    cd PROJECT_DIR
    python /Users/conalmullan/work/video/tools/voiceover.py \
@@ -123,10 +169,63 @@ Before gathering configuration, check if we're in a project context:
      --json
    ```
 
-   **Single-file mode (legacy):**
+   **ElevenLabs — Single-file mode (legacy):**
    ```bash
    cd PROJECT_DIR
    python /Users/conalmullan/work/video/tools/voiceover.py \
+     --script "SCRIPT_PATH" \
+     --output "public/audio/voiceover.mp3" \
+     --json
+   ```
+
+   **Qwen3-TTS — Per-scene mode:**
+   ```bash
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --provider qwen3 \
+     --speaker SPEAKER_NAME \
+     --scene-dir public/audio/scenes \
+     --json
+   ```
+
+   **Qwen3-TTS — With brand clone profile:**
+   ```bash
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --provider qwen3 \
+     --brand BRAND_NAME \
+     --scene-dir public/audio/scenes \
+     --json
+   ```
+
+   **Qwen3-TTS — With tone preset:**
+   ```bash
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --provider qwen3 \
+     --speaker Ryan \
+     --tone warm \
+     --scene-dir public/audio/scenes \
+     --json
+   ```
+
+   **Qwen3-TTS — With custom instruction (overrides --tone):**
+   ```bash
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --provider qwen3 \
+     --speaker Ryan \
+     --instruct "Speak warmly and calmly" \
+     --scene-dir public/audio/scenes \
+     --json
+   ```
+
+   **Qwen3-TTS — Single-file mode:**
+   ```bash
+   cd PROJECT_DIR
+   python /Users/conalmullan/work/video/tools/voiceover.py \
+     --provider qwen3 \
+     --speaker Ryan \
      --script "SCRIPT_PATH" \
      --output "public/audio/voiceover.mp3" \
      --json
@@ -166,8 +265,9 @@ Before gathering configuration, check if we're in a project context:
 ## Tool Location
 
 - Voiceover tool: `/Users/conalmullan/work/video/tools/voiceover.py`
+- Qwen3-TTS tool: `/Users/conalmullan/work/video/tools/qwen3_tts.py`
 - Config: `_internal/toolkit-registry.json` (voice ID)
-- API Key: `.env` file (`ELEVENLABS_API_KEY`)
+- API Key: `.env` file (`ELEVENLABS_API_KEY` for ElevenLabs, `RUNPOD_API_KEY` + `RUNPOD_QWEN3_TTS_ENDPOINT_ID` for Qwen3)
 
 ## Voice Settings Reference
 
@@ -211,8 +311,15 @@ Share these tips with the user:
 
 ## Error Handling
 
+**ElevenLabs:**
 - If `ELEVENLABS_API_KEY` is missing, tell user to add it to `.env`
 - If voice ID is missing, tell user to set `config.voiceId` in `toolkit-registry.json`
+
+**Qwen3-TTS:**
+- If `RUNPOD_API_KEY` is missing, tell user to add it to `.env`
+- If `RUNPOD_QWEN3_TTS_ENDPOINT_ID` is missing, tell user to run `python tools/qwen3_tts.py --setup`
+
+**Both:**
 - If script file not found, offer to create a template
 - If scene directory empty, prompt to create scene scripts first
 

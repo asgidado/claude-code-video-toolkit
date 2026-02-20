@@ -1,6 +1,6 @@
 {
   "name": "claude-code-video-toolkit",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "AI-native video production workspace for Claude Code",
   "repository": "https://github.com/digitalsamba/claude-code-video-toolkit",
 
@@ -97,10 +97,10 @@
     },
     "generate-voiceover": {
       "path": ".claude/commands/generate-voiceover.md",
-      "description": "Generate TTS voiceover using ElevenLabs",
+      "description": "Generate TTS voiceover using ElevenLabs or Qwen3-TTS",
       "status": "stable",
       "created": "2025-12-08",
-      "updated": "2025-12-09"
+      "updated": "2026-02-19"
     },
     "contribute": {
       "path": ".claude/commands/contribute.md",
@@ -142,11 +142,11 @@
   "tools": {
     "voiceover": {
       "path": "tools/voiceover.py",
-      "description": "Generate TTS voiceovers using ElevenLabs",
+      "description": "Generate TTS voiceovers using ElevenLabs or Qwen3-TTS",
       "usage": "python tools/voiceover.py --script SCRIPT.md --output out.mp3",
       "status": "stable",
       "created": "2025-12-08",
-      "updated": "2025-12-08"
+      "updated": "2026-02-19"
     },
     "music": {
       "path": "tools/music.py",
@@ -266,6 +266,25 @@
       "documentation": "docs/sadtalker.md",
       "created": "2026-01-11",
       "updated": "2026-01-12"
+    },
+    "qwen3_tts": {
+      "path": "tools/qwen3_tts.py",
+      "description": "Generate speech using Qwen3-TTS - built-in voices, emotion control, voice cloning",
+      "usage": "python tools/qwen3_tts.py --text \"Hello\" --speaker Ryan --output hello.mp3",
+      "status": "beta",
+      "category": "audio-generation",
+      "backend": "qwen3-tts",
+      "requires": "RunPod account",
+      "options": {
+        "speakers": ["Ryan", "Aiden", "Vivian", "Serena", "Uncle_Fu", "Dylan", "Eric", "Ono_Anna", "Sohee"],
+        "languages": ["Auto", "English", "Chinese", "French", "German", "Italian", "Japanese", "Korean", "Portuguese", "Russian", "Spanish"],
+        "modes": ["custom_voice", "clone"],
+        "formats": ["mp3", "wav"]
+      },
+      "envVars": ["RUNPOD_API_KEY", "RUNPOD_QWEN3_TTS_ENDPOINT_ID"],
+      "estimatedCost": "$0.005-0.10 per generation",
+      "created": "2026-02-19",
+      "updated": "2026-02-19"
     }
   },
 
@@ -321,6 +340,13 @@
           "envVar": "RUNPOD_SADTALKER_ENDPOINT_ID",
           "operations": ["sadtalker"],
           "estimatedCost": "$0.02-0.15 per video"
+        },
+        "qwen3-tts": {
+          "image": "ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest",
+          "dockerfile": "docker/runpod-qwen3-tts/",
+          "envVar": "RUNPOD_QWEN3_TTS_ENDPOINT_ID",
+          "operations": ["qwen3_tts"],
+          "estimatedCost": "$0.005-0.10 per generation"
         }
       },
       "created": "2025-12-30",

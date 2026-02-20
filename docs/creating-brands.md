@@ -119,6 +119,8 @@ Define sizes and weights for each text style:
 
 ## Voice Settings
 
+### ElevenLabs
+
 | Property | Description |
 |----------|-------------|
 | `voiceId` | ElevenLabs voice ID |
@@ -126,3 +128,46 @@ Define sizes and weights for each text style:
 | `similarityBoost` | Voice similarity (0-1, higher = more similar to original) |
 | `style` | Style exaggeration (0-1) |
 | `model` | ElevenLabs model to use |
+
+### Qwen3-TTS
+
+Add an optional `qwen3` section to `voice.json` for self-hosted TTS:
+
+```json
+{
+  "voiceId": "...",
+  "settings": { ... },
+  "qwen3": {
+    "speaker": "Ryan",
+    "language": "Auto",
+    "instruct": "",
+    "clone": {
+      "refAudio": "assets/voice-reference.m4a",
+      "refText": "Exact transcript of the reference audio."
+    }
+  }
+}
+```
+
+| Property | Description |
+|----------|-------------|
+| `qwen3.speaker` | Built-in speaker name (Ryan, Aiden, Vivian, etc.) |
+| `qwen3.language` | Language hint (Auto, English, Chinese, etc.) |
+| `qwen3.instruct` | Emotion/style instruction (e.g., "Speak warmly") |
+| `qwen3.clone.refAudio` | Path to reference audio, relative to brand directory |
+| `qwen3.clone.refText` | Exact transcript of the reference audio |
+
+Both `qwen3` and `qwen3.clone` are optional. Set `clone` to `null` or omit it to use built-in speakers only.
+
+### Setting Up Voice Cloning
+
+Run `/voice-clone` for a guided workflow that:
+1. Records or imports reference audio
+2. Tests the clone quality
+3. Saves the profile to your brand's `voice.json`
+
+Once saved, use `--brand` to load it automatically:
+
+```bash
+python tools/voiceover.py --provider qwen3 --brand my-company --scene-dir public/audio/scenes --json
+```

@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 **Key capabilities:**
 - Programmatic video creation with Remotion (React-based)
-- AI voiceover generation with ElevenLabs
+- AI voiceover generation with ElevenLabs or Qwen3-TTS
 - Browser demo recording with Playwright
 - Asset processing with FFmpeg
 
@@ -90,6 +90,7 @@ Claude Code has deep knowledge in these domains via `.claude/skills/`:
 | `/contribute` | Share improvements - issues, PRs, skills, templates |
 | `/record-demo` | Guided Playwright browser recording |
 | `/generate-voiceover` | Generate AI voiceover from script |
+| `/voice-clone` | Record, test, and save a cloned voice to a brand |
 | `/redub` | Redub existing video with different voice |
 | `/versions` | Check dependency versions and toolkit updates |
 
@@ -167,6 +168,21 @@ python tools/voiceover.py --scene-dir public/audio/scenes --json
 # Per-scene with concat for SadTalker narrator
 python tools/voiceover.py --scene-dir public/audio/scenes --concat public/audio/voiceover-concat.mp3
 
+# Using Qwen3-TTS (self-hosted, free alternative to ElevenLabs)
+python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
+python tools/voiceover.py --provider qwen3 --tone warm --scene-dir public/audio/scenes --json
+python tools/voiceover.py --provider qwen3 --brand my-brand --scene-dir public/audio/scenes --json
+python tools/voiceover.py --provider qwen3 --instruct "Speak warmly" --script script.txt --output out.mp3
+
+# Qwen3-TTS standalone tool
+python tools/qwen3_tts.py --text "Hello world" --speaker Ryan --output hello.mp3
+python tools/qwen3_tts.py --text "Hello world" --tone warm --output hello.mp3
+python tools/qwen3_tts.py --text "Hello" --instruct "Speak enthusiastically" --output excited.mp3
+python tools/qwen3_tts.py --text "Hello" --ref-audio sample.wav --ref-text "transcript" --output cloned.mp3
+python tools/qwen3_tts.py --list-voices
+python tools/qwen3_tts.py --list-tones
+python tools/qwen3_tts.py --setup
+
 # Background music
 python tools/music.py --prompt "Subtle corporate" --duration 120 --output music.mp3
 
@@ -242,7 +258,7 @@ See `docs/qwen-edit-patterns.md` and `.claude/skills/qwen-edit/` for prompting g
 |------|-------|-------------|
 | **Project tools** | voiceover, music, sfx | During video creation workflow |
 | **Utility tools** | redub, addmusic, notebooklm_brand, locate_watermark | Quick transformations on existing videos |
-| **Cloud GPU** | image_edit, upscale, dewatermark, sadtalker | AI processing via RunPod (see sections below) |
+| **Cloud GPU** | image_edit, upscale, dewatermark, sadtalker, qwen3_tts | AI processing via RunPod (see sections below) |
 
 Utility tools work on any video file without requiring a project structure.
 
@@ -414,6 +430,39 @@ python tools/sadtalker.py --setup
 ```
 
 See `docs/sadtalker.md` for detailed options, NarratorPiP workflow, and troubleshooting.
+
+### Qwen3-TTS Speech Generation (Cloud GPU)
+
+Self-hosted TTS via RunPod as an alternative to ElevenLabs. Supports 9 built-in speakers, natural-language emotion control, and voice cloning from reference audio. Apache-2.0 licensed.
+
+```bash
+# Standalone tool
+python tools/qwen3_tts.py --text "Hello world" --speaker Ryan --output hello.mp3
+python tools/qwen3_tts.py --text "Hello world" --tone warm --output hello.mp3
+python tools/qwen3_tts.py --text "Great news!" --instruct "Speak enthusiastically" --output excited.mp3
+python tools/qwen3_tts.py --text "Hello" --ref-audio sample.wav --ref-text "transcript" --output cloned.mp3
+python tools/qwen3_tts.py --list-voices
+python tools/qwen3_tts.py --list-tones
+
+# Via voiceover.py (per-scene generation)
+python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
+python tools/voiceover.py --provider qwen3 --tone warm --scene-dir public/audio/scenes --json
+python tools/voiceover.py --provider qwen3 --instruct "Speak warmly" --script script.txt --output out.mp3
+```
+
+**Built-in speakers:** Ryan (EN), Aiden (EN), Vivian (ZH), Serena (ZH), Uncle_Fu (ZH), Dylan (ZH), Eric (ZH), Ono_Anna (JA), Sohee (KO)
+
+**Tone presets:** neutral, warm, professional, excited, calm, serious, storyteller, tutorial (see `--list-tones`)
+
+**Languages:** Auto, English, Chinese, French, German, Italian, Japanese, Korean, Portuguese, Russian, Spanish
+
+**RunPod setup:**
+```bash
+echo "RUNPOD_API_KEY=your_key_here" >> .env
+python tools/qwen3_tts.py --setup
+```
+
+Uses pre-built image: `ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest`
 
 ### Redub Sync Mode
 

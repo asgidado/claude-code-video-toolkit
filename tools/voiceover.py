@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Generate voiceover audio using ElevenLabs TTS.
+Generate voiceover audio using ElevenLabs or Qwen3-TTS.
 
 Usage:
-    # From script file
+    # From script file (ElevenLabs, default)
     python tools/voiceover.py --script VOICEOVER-SCRIPT.md --output public/audio/voiceover.mp3
 
     # From stdin (for AI piping)
@@ -20,6 +20,11 @@ Usage:
 
     # With concat for SadTalker narrator
     python tools/voiceover.py --scene-dir public/audio/scenes --concat public/audio/voiceover-concat.mp3
+
+    # Using Qwen3-TTS provider
+    python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
+    python tools/voiceover.py --provider qwen3 --tone warm --scene-dir public/audio/scenes --json
+    python tools/voiceover.py --provider qwen3 --instruct "Speak warmly" --script script.txt --output out.mp3
 """
 
 import argparse
@@ -29,25 +34,33 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from elevenlabs import VoiceSettings, save
-from elevenlabs.client import ElevenLabs
 
 # Add parent to path for local imports
 sys.path.insert(0, str(Path(__file__).parent))
-from config import get_elevenlabs_api_key, get_voice_id
+from config import get_brand_dir, get_elevenlabs_api_key, get_voice_id, load_brand_voice_config
+
+
+def _get_elevenlabs_imports():
+    """Lazy import ElevenLabs SDK (only when provider=elevenlabs)."""
+    from elevenlabs import VoiceSettings, save
+    from elevenlabs.client import ElevenLabs
+    return ElevenLabs, VoiceSettings, save
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Generate voiceover using ElevenLabs TTS",
+        description="Generate voiceover using ElevenLabs or Qwen3-TTS",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  # ElevenLabs (default)
   python tools/voiceover.py --script VOICEOVER-SCRIPT.md --output public/audio/voiceover.mp3
-  echo "Hello" | python tools/voiceover.py --output hello.mp3
-  python tools/voiceover.py --script script.txt --voice-id ABC123 --output out.mp3 --json
   python tools/voiceover.py --scene-dir public/audio/scenes --json
-  python tools/voiceover.py --scene-dir public/audio/scenes --concat public/audio/voiceover-concat.mp3
+
+  # Qwen3-TTS
+  python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
+  python tools/voiceover.py --provider qwen3 --tone warm --scene-dir public/audio/scenes --json
+  python tools/voiceover.py --provider qwen3 --instruct "Speak warmly" --script script.txt --output out.mp3
         """,
     )
     parser.add_argument(
@@ -72,6 +85,17 @@ Examples:
         type=str,
         help="Output path for concatenated audio (use with --scene-dir for SadTalker)",
     )
+
+    # Provider selection
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="elevenlabs",
+        choices=["elevenlabs", "qwen3"],
+        help="TTS provider (default: elevenlabs)",
+    )
+
+    # ElevenLabs-specific options
     parser.add_argument(
         "--voice-id",
         "-v",
@@ -110,6 +134,50 @@ Examples:
         default=1.0,
         help="Speech speed multiplier (default: 1.0)",
     )
+
+    # Qwen3-TTS-specific options
+    parser.add_argument(
+        "--speaker",
+        type=str,
+        default="Ryan",
+        help="Qwen3-TTS speaker name (default: Ryan). Use 'python tools/qwen3_tts.py --list-voices' to see options.",
+    )
+    parser.add_argument(
+        "--language",
+        type=str,
+        default="Auto",
+        help="Qwen3-TTS language hint (default: Auto)",
+    )
+    parser.add_argument(
+        "--instruct",
+        type=str,
+        default="",
+        help="Qwen3-TTS emotion/style instruction (e.g., 'Speak warmly'). Overrides --tone.",
+    )
+    parser.add_argument(
+        "--tone",
+        type=str,
+        help="Qwen3-TTS tone preset (e.g., 'warm', 'professional'). See 'python tools/qwen3_tts.py --list-tones'.",
+    )
+    parser.add_argument(
+        "--ref-audio",
+        type=str,
+        help="Qwen3-TTS reference audio file for voice cloning",
+    )
+    parser.add_argument(
+        "--ref-text",
+        type=str,
+        help="Qwen3-TTS transcript of reference audio (required with --ref-audio)",
+    )
+
+    # Brand integration
+    parser.add_argument(
+        "--brand",
+        type=str,
+        help="Brand name to load voice config from (e.g., 'default', 'digital-samba')",
+    )
+
+    # Common options
     parser.add_argument(
         "--json",
         action="store_true",
@@ -161,7 +229,7 @@ def get_audio_duration(file_path: str) -> float | None:
 
 
 def generate_single_audio(
-    client: ElevenLabs,
+    client,
     script: str,
     output_path: Path,
     voice_id: str,
@@ -171,7 +239,9 @@ def generate_single_audio(
     style: float,
     speed: float,
 ) -> dict:
-    """Generate a single audio file from script text. Returns result dict."""
+    """Generate a single audio file from script text using ElevenLabs. Returns result dict."""
+    _, VoiceSettings, save = _get_elevenlabs_imports()
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     audio = client.text_to_speech.convert(
@@ -202,17 +272,52 @@ def generate_single_audio(
     return result
 
 
+def generate_single_audio_qwen3(
+    script: str,
+    output_path: Path,
+    speaker: str = "Ryan",
+    language: str = "Auto",
+    instruct: str = "",
+    ref_audio: str | None = None,
+    ref_text: str | None = None,
+) -> dict:
+    """Generate a single audio file from script text using Qwen3-TTS. Returns result dict."""
+    from qwen3_tts import generate_audio
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    return generate_audio(
+        text=script,
+        output_path=str(output_path),
+        speaker=speaker,
+        language=language,
+        instruct=instruct,
+        ref_audio=ref_audio,
+        ref_text=ref_text,
+        verbose=False,
+    )
+
+
 def process_scene_directory(
-    client: ElevenLabs,
     scene_dir: Path,
-    voice_id: str,
-    model: str,
-    stability: float,
-    similarity: float,
-    style: float,
-    speed: float,
     dry_run: bool = False,
     json_output: bool = False,
+    # Provider
+    provider: str = "elevenlabs",
+    # ElevenLabs params
+    client=None,
+    voice_id: str = "",
+    model: str = "eleven_multilingual_v2",
+    stability: float = 0.85,
+    similarity: float = 0.95,
+    style: float = 0.0,
+    speed: float = 1.0,
+    # Qwen3 params
+    speaker: str = "Ryan",
+    language: str = "Auto",
+    instruct: str = "",
+    ref_audio: str | None = None,
+    ref_text: str | None = None,
 ) -> list[dict]:
     """Process all .txt files in directory, generate .mp3 for each."""
     txt_files = sorted(scene_dir.glob("*.txt"))
@@ -233,32 +338,63 @@ def process_scene_directory(
             print(f"Warning: Empty script in {txt_file.name}, skipping", file=sys.stderr)
             continue
 
+        # Parse per-scene instruct frontmatter: [tone: X] or [instruct: X]
+        scene_instruct = instruct
+        if provider == "qwen3":
+            import re
+            first_line = script.split("\n", 1)[0].strip()
+            m = re.match(r"^\[(tone|instruct):\s*(.+?)\]\s*$", first_line, re.IGNORECASE)
+            if m:
+                kind, value = m.group(1).lower(), m.group(2).strip()
+                if kind == "tone":
+                    from qwen3_tts import resolve_tone
+                    scene_instruct = resolve_tone(value, "")
+                else:
+                    scene_instruct = value
+                # Strip the frontmatter line from the script
+                script = script.split("\n", 1)[1].strip() if "\n" in script else ""
+
         total_chars += len(script)
 
         if dry_run:
-            results.append({
+            scene_result = {
                 "dry_run": True,
                 "script": str(txt_file),
                 "output": str(mp3_file),
                 "script_chars": len(script),
-            })
+            }
+            if provider == "qwen3" and scene_instruct:
+                scene_result["instruct"] = scene_instruct
+            results.append(scene_result)
             if not json_output:
-                print(f"  {txt_file.name} → {mp3_file.name} ({len(script)} chars)")
+                tone_note = f" [instruct: {scene_instruct}]" if scene_instruct != instruct else ""
+                print(f"  {txt_file.name} → {mp3_file.name} ({len(script)} chars){tone_note}")
         else:
             if not json_output:
                 print(f"Generating {mp3_file.name}...", file=sys.stderr)
 
-            result = generate_single_audio(
-                client=client,
-                script=script,
-                output_path=mp3_file,
-                voice_id=voice_id,
-                model=model,
-                stability=stability,
-                similarity=similarity,
-                style=style,
-                speed=speed,
-            )
+            if provider == "qwen3":
+                result = generate_single_audio_qwen3(
+                    script=script,
+                    output_path=mp3_file,
+                    speaker=speaker,
+                    language=language,
+                    instruct=scene_instruct,
+                    ref_audio=ref_audio,
+                    ref_text=ref_text,
+                )
+            else:
+                result = generate_single_audio(
+                    client=client,
+                    script=script,
+                    output_path=mp3_file,
+                    voice_id=voice_id,
+                    model=model,
+                    stability=stability,
+                    similarity=similarity,
+                    style=style,
+                    speed=speed,
+                )
             result["script"] = str(txt_file)
             results.append(result)
 
@@ -267,7 +403,7 @@ def process_scene_directory(
 
             if not json_output:
                 duration_str = f" ({result.get('duration_seconds', '?')}s)"
-                print(f"  ✅ {mp3_file.name}{duration_str}", file=sys.stderr)
+                print(f"  {mp3_file.name}{duration_str}", file=sys.stderr)
 
     return results, total_duration, total_chars
 
@@ -321,6 +457,8 @@ def main():
     load_dotenv()
     args = parse_args()
 
+    provider = args.provider
+
     # Validate argument combinations
     if args.scene_dir and args.script:
         print("Error: Cannot use both --scene-dir and --script", file=sys.stderr)
@@ -334,22 +472,78 @@ def main():
         print("Error: --output is required for single-file mode", file=sys.stderr)
         sys.exit(1)
 
-    # Get API key
-    api_key = get_elevenlabs_api_key()
-    if not api_key:
-        print("Error: ELEVENLABS_API_KEY not found in environment", file=sys.stderr)
+    if args.ref_audio and not args.ref_text:
+        print("Error: --ref-text is required with --ref-audio", file=sys.stderr)
         sys.exit(1)
 
-    # Get voice ID
-    voice_id = args.voice_id or get_voice_id()
-    if not voice_id:
+    # Brand voice config resolution
+    if args.brand:
+        voice_config = load_brand_voice_config(args.brand)
+        if not voice_config:
+            print(f"Error: Brand '{args.brand}' not found or has no voice.json", file=sys.stderr)
+            sys.exit(1)
+
+        if provider == "qwen3":
+            qwen3_cfg = voice_config.get("qwen3", {})
+            # Apply clone config if no explicit --ref-audio
+            clone_cfg = qwen3_cfg.get("clone", {})
+            if clone_cfg and not args.ref_audio:
+                brand_dir = get_brand_dir(args.brand)
+                ref_audio_path = brand_dir / clone_cfg["refAudio"]
+                if ref_audio_path.exists():
+                    args.ref_audio = str(ref_audio_path)
+                    args.ref_text = clone_cfg.get("refText", "")
+                else:
+                    print(f"Warning: Clone ref audio not found: {ref_audio_path}", file=sys.stderr)
+            # Apply speaker/language/instruct defaults from brand
+            if qwen3_cfg.get("speaker") and args.speaker == "Ryan":
+                args.speaker = qwen3_cfg["speaker"]
+            if qwen3_cfg.get("language") and args.language == "Auto":
+                args.language = qwen3_cfg["language"]
+            if qwen3_cfg.get("instruct") and not args.instruct:
+                args.instruct = qwen3_cfg["instruct"]
+            if qwen3_cfg.get("tone") and not args.tone and not args.instruct:
+                args.tone = qwen3_cfg["tone"]
+        elif provider == "elevenlabs":
+            # Apply voice ID from brand if not explicitly provided
+            if not args.voice_id and voice_config.get("voiceId") and voice_config["voiceId"] != "YOUR_VOICE_ID_HERE":
+                args.voice_id = voice_config["voiceId"]
+
+    # Resolve tone preset → instruct text for Qwen3
+    if provider == "qwen3" and (args.tone or args.instruct):
+        from qwen3_tts import resolve_tone
+        args.instruct = resolve_tone(args.tone, args.instruct)
+
+    # Warn if tone/instruct used with clone (clone mode ignores instruct)
+    if provider == "qwen3" and args.ref_audio and args.instruct:
         print(
-            "Error: No voice ID provided and none found in toolkit-registry.json",
+            "Note: --tone/--instruct is ignored when using a cloned voice.\n"
+            "  The clone's tone comes from your reference recording.\n"
+            "  Tip: Run /voice-clone to record a new reference with a different feel.",
             file=sys.stderr,
         )
-        sys.exit(1)
+        args.instruct = ""
 
-    client = ElevenLabs(api_key=api_key)
+    # Provider-specific setup
+    client = None
+    voice_id = None
+
+    if provider == "elevenlabs":
+        api_key = get_elevenlabs_api_key()
+        if not api_key:
+            print("Error: ELEVENLABS_API_KEY not found in environment", file=sys.stderr)
+            sys.exit(1)
+
+        voice_id = args.voice_id or get_voice_id()
+        if not voice_id:
+            print(
+                "Error: No voice ID provided and none found in toolkit-registry.json",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        ElevenLabs, _, _ = _get_elevenlabs_imports()
+        client = ElevenLabs(api_key=api_key)
 
     # Per-scene mode
     if args.scene_dir:
@@ -360,38 +554,52 @@ def main():
 
         if not args.json:
             txt_count = len(list(scene_dir.glob("*.txt")))
-            print(f"Processing {txt_count} scene scripts in {scene_dir}...", file=sys.stderr)
+            provider_label = "Qwen3-TTS" if provider == "qwen3" else "ElevenLabs"
+            print(f"Processing {txt_count} scene scripts in {scene_dir} ({provider_label})...", file=sys.stderr)
 
         if args.dry_run:
             if not args.json:
                 print("Would generate:")
             results, total_duration, total_chars = process_scene_directory(
-                client=client,
                 scene_dir=scene_dir,
-                voice_id=voice_id,
+                dry_run=True,
+                json_output=args.json,
+                provider=provider,
+                client=client,
+                voice_id=voice_id or "",
                 model=args.model,
                 stability=args.stability,
                 similarity=args.similarity,
                 style=args.style,
                 speed=args.speed,
-                dry_run=True,
-                json_output=args.json,
+                speaker=args.speaker,
+                language=args.language,
+                instruct=args.instruct,
+                ref_audio=args.ref_audio,
+                ref_text=args.ref_text,
             )
             result = {
                 "dry_run": True,
                 "mode": "per_scene",
+                "provider": provider,
                 "scene_dir": str(scene_dir),
-                "voice_id": voice_id,
-                "model": args.model,
                 "total_chars": total_chars,
                 "scenes": results,
-                "settings": {
+            }
+            if provider == "elevenlabs":
+                result["voice_id"] = voice_id
+                result["model"] = args.model
+                result["settings"] = {
                     "stability": args.stability,
                     "similarity": args.similarity,
                     "style": args.style,
                     "speed": args.speed,
-                },
-            }
+                }
+            else:
+                result["speaker"] = args.speaker
+                result["language"] = args.language
+                if args.instruct:
+                    result["instruct"] = args.instruct
             if args.concat:
                 result["concat_output"] = args.concat
             if args.json:
@@ -400,30 +608,38 @@ def main():
 
         # Generate per-scene audio
         results, total_duration, total_chars = process_scene_directory(
-            client=client,
             scene_dir=scene_dir,
-            voice_id=voice_id,
+            dry_run=False,
+            json_output=args.json,
+            provider=provider,
+            client=client,
+            voice_id=voice_id or "",
             model=args.model,
             stability=args.stability,
             similarity=args.similarity,
             style=args.style,
             speed=args.speed,
-            dry_run=False,
-            json_output=args.json,
+            speaker=args.speaker,
+            language=args.language,
+            instruct=args.instruct,
+            ref_audio=args.ref_audio,
+            ref_text=args.ref_text,
         )
 
         # Build final result
         result = {
             "success": True,
             "mode": "per_scene",
+            "provider": provider,
             "scene_dir": str(scene_dir),
-            "voice_id": voice_id,
-            "model": args.model,
             "total_chars": total_chars,
             "total_duration_seconds": round(total_duration, 2),
             "total_duration_frames_30fps": int(total_duration * 30),
             "scenes": results,
         }
+        if provider == "elevenlabs":
+            result["voice_id"] = voice_id
+            result["model"] = args.model
 
         # Concat if requested
         if args.concat:
@@ -433,7 +649,7 @@ def main():
             concat_result = concat_audio_files(mp3_files, Path(args.concat))
             result["concat"] = concat_result
             if not args.json and concat_result.get("success"):
-                print(f"  ✅ {args.concat} ({concat_result.get('duration_seconds')}s)", file=sys.stderr)
+                print(f"  {args.concat} ({concat_result.get('duration_seconds')}s)", file=sys.stderr)
 
         if args.json:
             print(json.dumps(result, indent=2))
@@ -456,57 +672,87 @@ def main():
         result = {
             "dry_run": True,
             "mode": "single",
-            "voice_id": voice_id,
-            "model": args.model,
+            "provider": provider,
             "script_length": len(script),
             "script_chars": len(script),
             "output": str(output_path),
-            "settings": {
+        }
+        if provider == "elevenlabs":
+            result["voice_id"] = voice_id
+            result["model"] = args.model
+            result["settings"] = {
                 "stability": args.stability,
                 "similarity": args.similarity,
                 "style": args.style,
                 "speed": args.speed,
-            },
-        }
+            }
+        else:
+            result["speaker"] = args.speaker
+            result["language"] = args.language
+            if args.instruct:
+                result["instruct"] = args.instruct
         if args.json:
             print(json.dumps(result, indent=2))
         else:
             print(f"Would generate voiceover:")
-            print(f"  Voice ID: {voice_id}")
-            print(f"  Model: {args.model}")
+            if provider == "elevenlabs":
+                print(f"  Voice ID: {voice_id}")
+                print(f"  Model: {args.model}")
+            else:
+                print(f"  Speaker: {args.speaker}")
+                print(f"  Language: {args.language}")
             print(f"  Script: {len(script)} characters")
             print(f"  Output: {output_path}")
         return
 
     # Generate voiceover
     if not args.json:
-        print(f"Generating voiceover ({len(script)} chars)...", file=sys.stderr)
+        provider_label = "Qwen3-TTS" if provider == "qwen3" else "ElevenLabs"
+        print(f"Generating voiceover ({len(script)} chars, {provider_label})...", file=sys.stderr)
 
-    result = generate_single_audio(
-        client=client,
-        script=script,
-        output_path=output_path,
-        voice_id=voice_id,
-        model=args.model,
-        stability=args.stability,
-        similarity=args.similarity,
-        style=args.style,
-        speed=args.speed,
-    )
+    if provider == "qwen3":
+        result = generate_single_audio_qwen3(
+            script=script,
+            output_path=output_path,
+            speaker=args.speaker,
+            language=args.language,
+            instruct=args.instruct,
+            ref_audio=args.ref_audio,
+            ref_text=args.ref_text,
+        )
+    else:
+        result = generate_single_audio(
+            client=client,
+            script=script,
+            output_path=output_path,
+            voice_id=voice_id,
+            model=args.model,
+            stability=args.stability,
+            similarity=args.similarity,
+            style=args.style,
+            speed=args.speed,
+        )
+
     result["mode"] = "single"
-    result["voice_id"] = voice_id
-    result["model"] = args.model
+    result["provider"] = provider
+    if provider == "elevenlabs":
+        result["voice_id"] = voice_id
+        result["model"] = args.model
 
     if args.json:
         print(json.dumps(result, indent=2))
     else:
-        print(f"Voiceover saved to: {output_path}", file=sys.stderr)
-        duration = result.get("duration_seconds")
-        if duration:
-            print(
-                f"Duration: {duration:.2f}s ({int(duration * 30)} frames @ 30fps)",
-                file=sys.stderr,
-            )
+        if result.get("success"):
+            print(f"Voiceover saved to: {output_path}", file=sys.stderr)
+            duration = result.get("duration_seconds")
+            if duration:
+                print(
+                    f"Duration: {duration:.2f}s ({int(duration * 30)} frames @ 30fps)",
+                    file=sys.stderr,
+                )
+        else:
+            print(f"Error: {result.get('error', 'Unknown error')}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":

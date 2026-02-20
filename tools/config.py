@@ -71,6 +71,33 @@ def get_runpod_endpoint_id() -> str | None:
     return os.getenv("RUNPOD_ENDPOINT_ID")
 
 
+def get_qwen3_tts_endpoint_id() -> str | None:
+    """Get Qwen3-TTS RunPod endpoint ID from environment."""
+    from dotenv import load_dotenv
+    load_dotenv()
+    return os.getenv("RUNPOD_QWEN3_TTS_ENDPOINT_ID")
+
+
+def get_brand_dir(brand_name: str) -> Path | None:
+    """Get the directory for a brand profile."""
+    brand_dir = find_workspace_root() / "brands" / brand_name
+    if brand_dir.is_dir() and (brand_dir / "brand.json").exists():
+        return brand_dir
+    return None
+
+
+def load_brand_voice_config(brand_name: str) -> dict | None:
+    """Load voice.json for a brand. Returns parsed dict or None."""
+    brand_dir = get_brand_dir(brand_name)
+    if not brand_dir:
+        return None
+    voice_path = brand_dir / "voice.json"
+    if not voice_path.exists():
+        return None
+    with open(voice_path) as f:
+        return json.load(f)
+
+
 def get_r2_config() -> dict | None:
     """Get Cloudflare R2 configuration from environment.
 
