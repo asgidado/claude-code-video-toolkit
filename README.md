@@ -4,6 +4,27 @@
 
 An AI-native video production workspace for [Claude Code](https://claude.ai/code). Create professional videos with AI assistance — from concept to final render.
 
+## A Note from the Author *(not AI-generated)*
+
+> I've spent months painstakingly putting this toolkit together and plan to keep iterating on it. AI makes things easier, but hard work still has huge value. Every video I create is a chance for improvement — every skill, template, tool, and workflow here has been refined through that cycle. It would be wonderful if others wanted to get involved with that: use it, refine it, and feed back into the repo via an issue or PR what you learn.
+>
+> My own use case is fairly specific: creating sprint review videos for the AI mobile development arm of [Digital Samba](https://www.digitalsamba.com/). But the idea behind this project is a reusable toolkit for using Claude Code to autonomously generate any kind of "explainer" style video — product demos, walkthroughs, presentations, whatever you need. Autonomous video creation is a lofty ideal for such a subjective field, but we can try :)
+>
+> What makes this work is that Claude Code is fantastically resourceful and flexible — give it the framing and tooling that this toolkit provides and it will adapt it to create templates and videos based on your prompting. The skills, templates, and tools here are building blocks. Claude Code is the builder. You are the director, editor, and designer.
+>
+> **If you're getting started**, I'd suggest beginning with the `/template` command and working through creating a template for your own use case.
+>
+> **I highly recommend a [RunPod](https://runpod.io/) account** for running open-source models with GPU resources. It's cheap — typically pennies per job, and rarely more than $10/month even with heavy use. I will likely make Qwen3-TTS the default for voiceovers as it arguably produces better results with significantly less effort and cost than ElevenLabs.
+>
+> **Free Docker images** — I've made all the RunPod images I use in this project available publicly:
+> - `ghcr.io/conalmullan/video-toolkit-qwen-edit` — AI image editing (Qwen-Image-Edit)
+> - `ghcr.io/conalmullan/video-toolkit-realesrgan` — AI image upscaling (Real-ESRGAN)
+> - `ghcr.io/conalmullan/video-toolkit-propainter` — Video watermark removal (ProPainter)
+> - `ghcr.io/conalmullan/video-toolkit-sadtalker` — Talking head generation (SadTalker)
+> - `ghcr.io/conalmullan/video-toolkit-qwen3-tts` — Text-to-speech (Qwen3-TTS)
+>
+> My motto: **Be brave. Experiment.** And please share any videos you create or ideas you have back with the project — it helps me keep improving this toolkit for everyone.
+
 ## What is this?
 
 This toolkit gives Claude Code the knowledge and tools to help you create videos:
