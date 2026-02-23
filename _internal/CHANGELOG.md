@@ -6,6 +6,27 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
+## 2026-02-23 (v0.9.4)
+
+### Added
+- **Qwen3-TTS integration** — Self-hosted TTS via RunPod as cheaper alternative to ElevenLabs
+  - `tools/qwen3_tts.py` standalone CLI with 9 speakers, tone presets, voice cloning
+  - `voiceover.py --provider qwen3` for per-scene generation
+  - Docker image: `ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest`
+  - Temperature/top_p params for expressiveness control
+- **`/voice-clone` command** — Record, test, and save a cloned voice to a brand profile
+- **`sprint-review-v2` template** — Composable scene-based architecture for sprint reviews
+- **`FilmGrain` component** — SVG noise overlay for cinematic film texture
+- **Author's note in README** — Project philosophy, getting started guidance, free Docker images list
+
+### Changed
+- Updated README with Qwen3-TTS in tools section, Docker images table, voice-clone command
+- Updated CLAUDE.md with FilmGrain component and checkerboard transition
+- Updated roadmap metrics and skill status table
+- Fixed cho-oyu demo link; added cortina sprint to demos table
+
+---
+
 ## 2026-02-19 (v0.9.3)
 
 ### Added

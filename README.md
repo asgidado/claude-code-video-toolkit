@@ -101,6 +101,7 @@ Claude Code has deep knowledge in:
 | **playwright-recording** | Browser automation — record demos as video |
 | **frontend-design** | Visual design refinement for distinctive, production-grade aesthetics |
 | **qwen-edit** | AI image editing — prompting patterns and best practices |
+| **runpod** | Cloud GPU — setup, Docker images, endpoint management, costs |
 
 ### Commands
 
@@ -116,6 +117,7 @@ Claude Code has deep knowledge in:
 | `/record-demo` | Record browser interactions with Playwright |
 | `/generate-voiceover` | Generate AI voiceover from a script |
 | `/redub` | Redub existing video with a different voice |
+| `/voice-clone` | Record, test, and save a cloned voice to a brand |
 | `/versions` | Check dependency versions and toolkit updates |
 
 > **Note:** After creating or modifying commands/skills, restart Claude Code to load changes.
@@ -125,6 +127,7 @@ Claude Code has deep knowledge in:
 Pre-built video structures in `templates/`:
 
 - **sprint-review** — Sprint review videos with demos, stats, and voiceover
+- **sprint-review-v2** — Composable scene-based sprint review with modular architecture
 - **product-demo** — Marketing videos with dark tech aesthetic, stats, CTA
 
 See `examples/` for finished projects you can learn from (oldest first, showing toolkit evolution):
@@ -198,8 +201,12 @@ See [lib/project/README.md](lib/project/README.md) for schema details, scene sta
 Audio, video, and image tools in `tools/`:
 
 ```bash
-# Generate voiceover
+# Generate voiceover (ElevenLabs)
 python tools/voiceover.py --script script.md --output voiceover.mp3
+
+# Generate voiceover (Qwen3-TTS — self-hosted, cheaper alternative)
+python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
+python tools/qwen3_tts.py --text "Hello world" --tone warm --output hello.mp3
 
 # Generate background music
 python tools/music.py --prompt "Upbeat corporate" --duration 120 --output music.mp3
@@ -241,7 +248,7 @@ python tools/sadtalker.py --image portrait.png --audio voiceover.mp3 --output ta
 |------|-------|---------|
 | **Project** | voiceover, music, sfx | Used during video creation workflow |
 | **Utility** | redub, addmusic, notebooklm_brand, locate_watermark | Quick transformations, no project needed |
-| **Cloud GPU** | image_edit, upscale, dewatermark, sadtalker | AI processing via RunPod (see below) |
+| **Cloud GPU** | image_edit, upscale, dewatermark, sadtalker, qwen3_tts | AI processing via RunPod (see below) |
 
 See [docs/runpod-setup.md](docs/runpod-setup.md) for Cloud GPU tool setup.
 
@@ -255,6 +262,7 @@ Cloud GPU tools use pre-built Docker images deployed to RunPod serverless:
 | upscale | `ghcr.io/conalmullan/video-toolkit-realesrgan:latest` | 24GB (RTX 3090/4090) |
 | dewatermark | `ghcr.io/conalmullan/video-toolkit-propainter:latest` | 24GB (RTX 3090/4090) |
 | sadtalker | `ghcr.io/conalmullan/video-toolkit-sadtalker:latest` | 24GB (RTX 4090) |
+| qwen3_tts | `ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest` | 24GB (ADA) |
 
 Dockerfiles and handlers are in `docker/`. Run `python tools/<tool>.py --setup` to auto-deploy.
 
@@ -268,7 +276,7 @@ claude-code-video-toolkit/
 │   ├── skills/          # Domain knowledge for Claude
 │   └── commands/        # Slash commands (/video, /brand, etc.)
 ├── lib/                 # Shared components, theme system, utilities
-│   ├── components/      # Reusable video components (9 components)
+│   ├── components/      # Reusable video components (11 components)
 │   ├── transitions/     # Scene transition effects (7 custom + 4 official)
 │   ├── theme/           # ThemeProvider, useTheme
 │   └── project/         # Multi-session project system

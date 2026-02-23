@@ -21,7 +21,7 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 
 **Phase:** 3 - Templates & Brands (nearly complete)
 **Focus:** Additional templates (tutorial, changelog), testing
-**Recent:** Added Cloud GPU tools (image_edit, upscale, dewatermark), qwen-edit skill
+**Recent:** Qwen3-TTS integration, sprint-review-v2 template, voice cloning, FilmGrain component
 
 ---
 
@@ -109,6 +109,23 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 - [ ] Enhancement suggestions
 - Note: `/review` name clashes with Claude Code built-in PR review - using `/scene-review`
 
+**Qwen3-TTS Integration:**
+- [x] `tools/qwen3_tts.py` — standalone CLI tool
+- [x] `voiceover.py --provider qwen3` — per-scene generation
+- [x] Docker image: `ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest`
+- [x] 9 built-in speakers, tone presets, voice cloning
+- [x] `/voice-clone` command — record, test, save cloned voice to brand
+- [x] Temperature/top_p generation params for expressiveness control
+- [ ] Make Qwen3-TTS the default provider (replacing ElevenLabs)
+
+**Sprint Review v2:**
+- [x] `sprint-review-v2` template — composable scene-based architecture
+- [x] Modular scene components
+
+**Additional Components:**
+- [x] `FilmGrain` — SVG noise overlay for cinematic texture
+- [x] `MazeDecoration` — Animated isometric grid decoration
+
 **Contribution & Examples:**
 - [x] `/contribute` command
 - [x] `examples/` directory
@@ -119,6 +136,12 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 - [ ] Test project resumption (multi-session)
 - [ ] Verify filesystem reconciliation
 - [x] Verify CLAUDE.md auto-generation
+
+**Registry & Roadmap Alignment:**
+- [x] Update skill status table to include all current skills
+- [x] Add Qwen3-TTS to roadmap phases
+- [x] Document `remotion-official` skill sync from upstream (remotion-dev/skills) in roadmap
+- [x] Update Metrics section
 
 ### Phase 4: Polish & Advanced
 
@@ -147,9 +170,12 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 | Skill | Status | Notes |
 |-------|--------|-------|
 | remotion | stable | Core framework knowledge |
+| remotion-official | stable | Synced from remotion-dev/skills (weekly via GitHub Actions) |
 | elevenlabs | stable | Audio generation |
 | ffmpeg | beta | Asset conversion |
 | playwright-recording | beta | Browser demo capture |
+| frontend-design | stable | Visual design refinement |
+| qwen-edit | stable | AI image editing prompting patterns |
 
 ---
 
@@ -173,12 +199,12 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 
 | Category | Count | Items |
 |----------|-------|-------|
-| Templates | 2 | sprint-review, product-demo |
+| Templates | 3 | sprint-review, sprint-review-v2, product-demo |
 | Brands | 2 | default, digital-samba |
-| Skills | 7 | 5 stable, 2 beta |
-| Tools | 10 | voiceover, music, sfx, redub, addmusic, dewatermark, locate_watermark, notebooklm_brand, image_edit, upscale |
-| Commands | 11 | video, brand, template, skills, contribute, record-demo, generate-voiceover, scene-review, design, versions, redub |
-| Components | 9 | AnimatedBackground, SlideTransition, Label, Vignette, LogoWatermark, SplitScreen, NarratorPiP, Envelope, PointingHand |
+| Skills | 8 | 6 stable, 2 beta |
+| Tools | 13 | voiceover, music, sfx, redub, addmusic, dewatermark, locate_watermark, notebooklm_brand, image_edit, upscale, sadtalker, qwen3_tts, redub |
+| Commands | 12 | video, brand, template, skills, contribute, record-demo, generate-voiceover, scene-review, design, versions, redub, voice-clone |
+| Components | 11 | AnimatedBackground, SlideTransition, Label, Vignette, FilmGrain, LogoWatermark, SplitScreen, NarratorPiP, Envelope, PointingHand, MazeDecoration |
 | Transitions | 7 | glitch, rgbSplit, zoomBlur, lightLeak, clockWipe, pixelate, checkerboard |
 | Examples | 2 | digital-samba-skill-demo, sprint-review-cho-oyu |
 

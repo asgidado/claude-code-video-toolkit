@@ -56,6 +56,13 @@
       "backend": "qwen-image-edit-2511",
       "created": "2026-01-03",
       "updated": "2026-01-05"
+    },
+    "runpod": {
+      "path": ".claude/skills/runpod/",
+      "description": "Cloud GPU setup, Docker images, endpoint management, troubleshooting",
+      "status": "stable",
+      "created": "2026-02-23",
+      "updated": "2026-02-23"
     }
   },
 

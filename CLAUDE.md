@@ -74,6 +74,7 @@ Claude Code has deep knowledge in these domains via `.claude/skills/`:
 | playwright-recording | beta | Browser demo capture |
 | frontend-design | stable | Visual design refinement for slides |
 | qwen-edit | stable | AI image editing prompting patterns |
+| runpod | stable | Cloud GPU setup, Docker images, endpoint management, troubleshooting |
 
 > **Note:** `remotion-official` is synced weekly from upstream via GitHub Actions. See `docs/remotion-skills-sync.md` for details.
 
@@ -150,6 +151,7 @@ import { AnimatedBackground, SlideTransition, Label } from '../../../../lib/comp
 | `Envelope` | 3D envelope with opening flap animation |
 | `PointingHand` | Animated hand emoji with slide-in and pulse |
 | `MazeDecoration` | Animated isometric grid decoration for corners |
+| `FilmGrain` | SVG noise overlay for cinematic film texture |
 
 ## Python Tools
 
@@ -684,6 +686,7 @@ import { glitch, lightLeak, zoomBlur } from '../../../lib/transitions';
 | `lightLeak()` | Cinematic lens flare, overexposure | Celebrations, film aesthetic |
 | `clockWipe()` | Radial wipe like clock hands | Playful reveals |
 | `pixelate()` | Digital mosaic dissolution | Retro/gaming themes |
+| `checkerboard()` | Grid-based reveal (9 patterns) | Playful, structured reveals |
 | `slide()` | Push scene from direction | Standard transitions |
 | `fade()` | Simple crossfade | Professional, subtle |
 | `wipe()` | Edge reveal | Clean transitions |
