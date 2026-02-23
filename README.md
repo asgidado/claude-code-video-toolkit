@@ -131,7 +131,7 @@ See `examples/` for finished projects you can learn from (oldest first, showing 
 
 | Date | Demo | Description |
 |------|------|-------------|
-| 2025-12-05 | [sprint-review-cho-oyu](https://demos.digitalsamba.com/video/sprint-review-cho-oyu.mp4) | iOS sprint review with demos |
+| 2025-12-05 | [sprint-review-cho-oyu](https://demos.digitalsamba.com/sprint-review-cho-oyu.mp4) | iOS sprint review with demos |
 | 2025-12-10 | [digital-samba-skill-demo](https://demos.digitalsamba.com/video/digital-samba-skill-demo.mp4) | Product demo showcasing Claude Code skill |
 | 2026-01-22 | [ds-remote-mcp](https://demos.digitalsamba.com/video/ds-remote-mcp.mp4) | Remote MCP server demo *(the jazz background music is a joke)* |
 | 2026-01-25 | [schlumbergera](https://demos.digitalsamba.com/video/schlumbergera.mp4) | Android sprint review video |
