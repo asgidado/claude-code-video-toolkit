@@ -42,9 +42,28 @@ from config import get_brand_dir, get_elevenlabs_api_key, get_voice_id, load_bra
 
 def _get_elevenlabs_imports():
     """Lazy import ElevenLabs SDK (only when provider=elevenlabs)."""
-    from elevenlabs import VoiceSettings, save
-    from elevenlabs.client import ElevenLabs
-    return ElevenLabs, VoiceSettings, save
+    try:
+        from elevenlabs import VoiceSettings, save
+        from elevenlabs.client import ElevenLabs
+        return ElevenLabs, VoiceSettings, save
+    except ImportError:
+        print(
+            "Error: ElevenLabs Python package not installed.\n"
+            "\n"
+            "You have 3 options:\n"
+            "\n"
+            "  1. Install ElevenLabs:\n"
+            "     pip install elevenlabs\n"
+            "\n"
+            "  2. Use Qwen3-TTS instead (free, self-hosted):\n"
+            "     python3 tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json\n"
+            "     (Requires RunPod account — run: python3 tools/qwen3_tts.py --setup)\n"
+            "\n"
+            "  3. Skip voiceover entirely:\n"
+            "     Videos render fine without audio. Add voiceover later when ready.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 
 def parse_args():
@@ -549,7 +568,22 @@ def main():
     if provider == "elevenlabs":
         api_key = get_elevenlabs_api_key()
         if not api_key:
-            print("Error: ELEVENLABS_API_KEY not found in environment", file=sys.stderr)
+            print(
+                "Error: No ElevenLabs API key found.\n"
+                "\n"
+                "You have 3 options:\n"
+                "\n"
+                "  1. Add an ElevenLabs key:\n"
+                "     echo \"ELEVENLABS_API_KEY=your_key\" >> .env\n"
+                "\n"
+                "  2. Use Qwen3-TTS instead (free, self-hosted):\n"
+                "     python3 tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json\n"
+                "     (Requires RunPod account — run: python3 tools/qwen3_tts.py --setup)\n"
+                "\n"
+                "  3. Skip voiceover entirely:\n"
+                "     Videos render fine without audio. Add voiceover later when ready.",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         voice_id = args.voice_id or get_voice_id()

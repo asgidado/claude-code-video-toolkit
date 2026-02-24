@@ -4,10 +4,11 @@ Curated showcase projects demonstrating toolkit capabilities.
 
 ## Available Examples
 
-| Example | Template | Contributor | Description |
-|---------|----------|-------------|-------------|
-| digital-samba-skill-demo | product-demo | [Digital Samba](https://digitalsamba.com) | Marketing video for Claude Code skill |
-| sprint-review-cho-oyu | sprint-review | [Digital Samba](https://digitalsamba.com) | iOS sprint review for Digital Samba Mobile |
+| Example | Template | Contributor | Description | Complexity |
+|---------|----------|-------------|-------------|------------|
+| hello-world | sprint-review | — | Minimal 25s video — zero config, renders in 2 minutes | Beginner |
+| digital-samba-skill-demo | product-demo | [Digital Samba](https://digitalsamba.com) | Marketing video for Claude Code skill | Intermediate |
+| sprint-review-cho-oyu | sprint-review | [Digital Samba](https://digitalsamba.com) | iOS sprint review for Digital Samba Mobile | Intermediate |
 
 > **Note:** Examples include configs and documentation, but NOT large media files. See each example's `ASSETS-NEEDED.md` for what to create.
 

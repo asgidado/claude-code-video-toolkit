@@ -4,13 +4,38 @@ This guide will help you create your first video using the claude-code-video-too
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/code) CLI installed
-- [Node.js](https://nodejs.org/) 18+
-- [Python](https://python.org/) 3.9+ (for audio tools)
-- [FFmpeg](https://ffmpeg.org/) installed
-- [ElevenLabs API key](https://elevenlabs.io/) (for voiceovers)
+### Minimum (renders videos immediately)
 
-## Setup
+- [Node.js](https://nodejs.org/) 18+ — that's it
+
+### Optional: AI Voiceover
+
+| Provider | Cost | Setup |
+|----------|------|-------|
+| Qwen3-TTS | Free (self-hosted) | RunPod account + `python tools/qwen3_tts.py --setup` |
+| ElevenLabs | Pay-per-use | API key in `.env` |
+
+### Optional: Full Toolkit
+
+- [Python](https://python.org/) 3.9+ — for audio tools, image editing, upscaling
+- [FFmpeg](https://ffmpeg.org/) — for media conversion and compression
+- [RunPod account](https://runpod.io/) — for cloud GPU processing (TTS, image editing, watermark removal, talking heads)
+- [ElevenLabs API key](https://elevenlabs.io/) — for premium AI voices
+
+## Your First Video in 2 Minutes
+
+```bash
+cd examples/hello-world
+npm install
+npm run studio    # Preview in browser
+npm run render    # Export MP4
+```
+
+No API keys needed. Edit `src/config/sprint-config.ts` to customize content.
+
+## Full Setup (for AI Tools)
+
+> This is optional — you can render videos with just Node.js installed.
 
 1. **Clone the repository**
    ```bash
@@ -21,7 +46,7 @@ This guide will help you create your first video using the claude-code-video-too
 2. **Create environment file**
    ```bash
    cp .env.example .env
-   # Edit .env and add your ELEVENLABS_API_KEY
+   # Edit .env and add keys for the features you want (all optional)
    ```
 
 3. **Install Python dependencies**

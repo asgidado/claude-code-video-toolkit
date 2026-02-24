@@ -41,25 +41,35 @@ Clone this repo, open it in Claude Code, and start creating videos.
 
 ### Prerequisites
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed
-- [Node.js](https://nodejs.org/) 18+
-- [Python](https://python.org/) 3.9+
-- [FFmpeg](https://ffmpeg.org/)
-- [ElevenLabs API key](https://elevenlabs.io/) (for AI voiceovers)
-- [RunPod API key](https://runpod.io/) (optional, for AI image editing, upscaling, watermark removal, talking head generation)
+| Requirement | Status | Purpose |
+|-------------|--------|---------|
+| [Node.js](https://nodejs.org/) 18+ | **Required** | Renders videos with Remotion |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **Required** | AI assistant for video creation |
+| [Python](https://python.org/) 3.9+ | Optional | AI voiceover, audio tools |
+| [FFmpeg](https://ffmpeg.org/) | Optional | Media conversion |
+| [RunPod account](https://runpod.io/) | Optional | Cloud GPU (TTS, image editing) |
+| [ElevenLabs API key](https://elevenlabs.io/) | Optional | Premium AI voices |
 
-### Setup
+### Try It Now
+
+```bash
+git clone https://github.com/digitalsamba/claude-code-video-toolkit.git
+cd claude-code-video-toolkit/examples/hello-world
+npm install
+npm run render    # Outputs MP4 — no API keys needed
+```
+
+### Full Setup
 
 ```bash
 # Clone the toolkit
 git clone https://github.com/digitalsamba/claude-code-video-toolkit.git
 cd claude-code-video-toolkit
 
-# Set up environment
+# Set up environment (all keys are optional)
 cp .env.example .env
-# Edit .env and add your ELEVENLABS_API_KEY
 
-# Install Python dependencies
+# Install Python dependencies (optional — only needed for AI tools)
 python -m venv .venv
 source .venv/bin/activate
 pip install -r tools/requirements.txt

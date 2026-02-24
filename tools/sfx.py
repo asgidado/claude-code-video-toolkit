@@ -177,7 +177,15 @@ def main():
     # Get API key
     api_key = get_elevenlabs_api_key()
     if not api_key:
-        print("Error: ELEVENLABS_API_KEY not found in environment", file=sys.stderr)
+        print(
+            "Error: No ElevenLabs API key found.\n"
+            "\n"
+            "To generate AI sound effects:\n"
+            "  echo \"ELEVENLABS_API_KEY=your_key\" >> .env\n"
+            "\n"
+            "Sound effects are optional — videos render fine without them.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     # Prepare output directory
