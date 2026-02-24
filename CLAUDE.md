@@ -594,32 +594,90 @@ See `lib/project/README.md` for details on the project system.
 Timing is critical. Keep these guidelines in mind:
 
 ### Pacing Rules
-- **Voiceover drives timing** - Narration length determines scene duration
-- **Reading pace** - ~150 words/minute for comfortable narration
-- **Demo pacing** - Real-time demos often need 1.5-2x speedup (`playbackRate`)
-- **Transitions** - Add 1-2s padding between scenes
-- **FPS** - All videos use 30fps (frames = seconds × 30)
+- **Voiceover drives timing** — Narration length determines scene duration
+- **Reading pace** — ~150 words/minute (2.5 words/second) for standard narration
+- **Demo pacing** — Real-time demos often need 1.5-2x speedup (`playbackRate`)
+- **Transitions** — Add 1-2s padding between scenes
+- **FPS** — All videos use 30fps (frames = seconds × 30)
 
-### Scene Duration Guidelines
-| Scene Type | Duration | Notes |
-|------------|----------|-------|
-| Title | 3-5s | Logo + headline |
-| Overview | 10-20s | 3-5 bullet points |
-| Demo | 10-30s | Adjust playbackRate to fit |
-| Stats | 8-12s | 3-4 stat cards |
-| Credits | 5-10s | Quick fade |
+### Speaking Rate Tiers
+
+Match pace to content complexity:
+
+| Pace | WPM | Use When |
+|------|-----|----------|
+| Slow | 120-130 | Technical explanations, complex concepts |
+| Standard | 140-160 | General narration, demos, overviews |
+| Fast | 160-180 | Energetic intros, recaps, CTAs |
+
+### Narration Density by Scene Type
+
+Not every scene needs wall-to-wall narration:
+
+| Scene Type | Duration | Narration Density | Notes |
+|------------|----------|-------------------|-------|
+| Title | 3-5s | 0-10% | Logo + headline, let visuals breathe |
+| Overview | 10-20s | 70-90% | 3-5 bullet points, narration-heavy |
+| Demo | 10-30s | 30-50% | Let the demo speak, narrate key moments only |
+| Stats | 8-12s | 70-90% | Read out highlights, skip obvious numbers |
+| Credits | 5-10s | 0-20% | Quick fade, maybe a closing line |
+| Problem/Solution | 10-15s | 80-90% | Narration drives the story |
+| CTA | 5-10s | 60-80% | Clear call to action, leave a beat at end |
+
+### Word Count Budgeting
+
+Before writing scripts, budget words per scene:
+
+```
+Target duration × 2.5 = word budget (at standard pace)
+Pause seconds × 2.5 = words to subtract from budget
+
+Example: 15s scene with a 1s pause
+  15 × 2.5 = 37 words budget
+  1 × 2.5 = 3 words for pause
+  Available: ~34 words of narration
+```
+
+Use `[pause 1.0s]` markers in scripts. Each second of pause costs ~2-3 words from the budget.
 
 ### Timing Calculations
 ```
-Script words ÷ 150 = voiceover minutes
+Script words ÷ 150 = voiceover minutes (estimate)
 Raw demo length ÷ playbackRate = demo duration
 Sum of scenes + transitions = total video
 ```
 
 ### When to Check Timing
-- After generating VOICEOVER-SCRIPT.md (estimate per scene)
-- When voiceover audio is created (compare actual vs estimated)
-- Before rendering (ensure everything fits)
+- **During scene planning** — Budget word counts per scene before writing
+- **After writing script** — Count words per scene, compare to budget
+- **After generating audio** — Compare actual audio duration vs estimate (this is where drift happens)
+- **Before rendering** — Ensure `durationInFrames` matches actual audio for each scene
+
+### TTS Duration Drift (The Real Timing Problem)
+
+TTS engines do NOT consistently produce 150 WPM output. In practice:
+- **ElevenLabs** tends to compress pauses and speed through short sentences. A 50s script may produce 40-45s of audio.
+- **Qwen3-TTS** varies by speaker and tone preset. Ryan at "professional" tone speaks ~10% faster than "warm."
+- **Short scenes drift more** — a 5-second scene might be off by 30%, while a 30-second scene is off by 10%.
+
+**The feedback loop after TTS generation:**
+
+1. Generate per-scene audio files
+2. Measure actual duration of each file (`ffprobe -show_entries format=duration`)
+3. Compare actual vs estimated per scene
+4. Update `durationInFrames` in config to match actual audio: `Math.ceil(actualSeconds * 30)`
+5. For demo scenes: recalculate `playbackRate = rawDemoDuration / actualNarrationDuration`
+6. Re-preview in Remotion Studio before rendering
+
+**Common drift patterns and fixes:**
+
+| Problem | Symptom | Fix |
+|---------|---------|-----|
+| Audio shorter than scene | Dead air / awkward silence at end | Reduce `durationInFrames` to match audio |
+| Audio longer than scene | Narration cut off | Increase `durationInFrames` or trim script |
+| Demo too fast for narration | Viewer can't follow | Decrease `playbackRate` or cut narration |
+| Demo too slow for narration | Waiting for demo to catch up | Increase `playbackRate` (1.5-2x typical) |
+| Pauses lost in TTS | Script felt spacious, audio feels rushed | Add explicit `<break time="1s"/>` in SSML or extend scene padding |
 
 ### Fixing Mismatches
 - **Voiceover too long**: Speed up demos, trim pauses, cut content
