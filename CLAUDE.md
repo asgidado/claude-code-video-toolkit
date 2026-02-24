@@ -24,17 +24,17 @@ claude-code-video-toolkit/
 │   ├── sprint-review/   # Sprint review video template
 │   └── product-demo/    # Marketing/product demo template
 ├── brands/              # Brand profiles (colors, fonts, voice)
-│   ├── default/
-│   └── digital-samba/
 ├── projects/            # Your video projects go here (gitignored)
 ├── examples/            # Curated showcase projects (shared)
-├── assets/              # Shared assets
-│   ├── voices/          # Voice samples for cloning
-│   └── images/          # Shared images
+├── assets/              # Shared assets (voices, images)
 ├── playwright/          # Browser recording infrastructure
 ├── docs/                # Documentation
-└── _internal/           # Toolkit metadata
+└── _internal/           # Toolkit metadata & registry
 ```
+
+## Registry
+
+`_internal/toolkit-registry.json` is the canonical source for all skills, commands, tools, templates, components, transitions, and cloud endpoints — including their paths, status, options, presets, and env vars. Consult it for structured data. This file focuses on **workflow guidance, patterns, and knowledge** that the registry can't capture.
 
 ## Quick Start
 
@@ -61,62 +61,17 @@ npm run studio   # Preview
 npm run render   # Export
 ```
 
-## Skills Reference
-
-Claude Code has deep knowledge in these domains via `.claude/skills/`:
-
-| Skill | Status | Purpose |
-|-------|--------|---------|
-| remotion-official | stable | Core Remotion framework (synced from [remotion-dev/skills](https://github.com/remotion-dev/skills)) |
-| remotion | stable | Toolkit-specific: custom transitions, shared components, conventions |
-| elevenlabs | stable | TTS, voice cloning, music, SFX |
-| ffmpeg | beta | Asset conversion, compression |
-| playwright-recording | beta | Browser demo capture |
-| frontend-design | stable | Visual design refinement for slides |
-| qwen-edit | stable | AI image editing prompting patterns |
-| runpod | stable | Cloud GPU setup, Docker images, endpoint management, troubleshooting |
-
-> **Note:** `remotion-official` is synced weekly from upstream via GitHub Actions. See `docs/remotion-skills-sync.md` for details.
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `/video` | Video projects - list, resume, or create new |
-| `/scene-review` | Scene-by-scene review in Remotion Studio (before voiceover) |
-| `/design` | Focused design refinement session for a scene |
-| `/brand` | Brand profiles - list, edit, or create new |
-| `/template` | List available templates or create new ones |
-| `/skills` | List installed skills or create new ones |
-| `/contribute` | Share improvements - issues, PRs, skills, templates |
-| `/record-demo` | Guided Playwright browser recording |
-| `/generate-voiceover` | Generate AI voiceover from script |
-| `/voice-clone` | Record, test, and save a cloned voice to a brand |
-| `/redub` | Redub existing video with different voice |
-| `/versions` | Check dependency versions and toolkit updates |
-
 > **Note:** After creating or modifying commands/skills, restart Claude Code to load changes.
 
 ## Templates
 
-Templates live in `templates/`. Each is a standalone Remotion project:
+Templates live in `templates/`. Each is a standalone Remotion project. See registry `templates` section for the full list.
 
 ### sprint-review
-Config-driven sprint review videos with:
-- Theme system (colors, fonts, spacing)
-- Config-driven content (`sprint-config.ts`)
-- Pre-built slides: Title, Overview, Summary, Credits
-- Demo components: Single video, Split-screen
-- Audio integration (voiceover, music, SFX)
+Config-driven sprint review videos with theme system, config-driven content (`sprint-config.ts`), pre-built slides (Title, Overview, Summary, Credits), demo components (single video, split-screen), and audio integration.
 
 ### product-demo
-Marketing/product demo videos with dark tech aesthetic:
-- Scene-based composition (title, problem, solution, demo, stats, CTA)
-- Config-driven content (`demo-config.ts`)
-- Animated background with floating shapes
-- Narrator PiP (picture-in-picture presenter)
-- Browser/terminal chrome for demo videos
-- Stats cards with spring animations
+Marketing/product demo videos with dark tech aesthetic, scene-based composition (title, problem, solution, demo, stats, CTA), animated background, Narrator PiP, browser/terminal chrome, and stats cards with spring animations.
 
 ## Brand Profiles
 
@@ -133,275 +88,108 @@ See `docs/creating-brands.md` for details.
 
 ## Shared Components
 
-Reusable video components in `lib/components/`. Import in templates via:
+Reusable video components in `lib/components/`. See registry `components` section for the full list with descriptions. Import in templates via:
 
 ```tsx
 import { AnimatedBackground, SlideTransition, Label } from '../../../../lib/components';
 ```
 
-| Component | Purpose |
-|-----------|---------|
-| `AnimatedBackground` | Floating shapes background (variants: subtle, tech, warm, dark) |
-| `SlideTransition` | Scene transitions (fade, zoom, slide-up, blur-fade) |
-| `Label` | Floating label badge with optional JIRA reference |
-| `Vignette` | Cinematic edge darkening overlay |
-| `LogoWatermark` | Corner logo branding |
-| `SplitScreen` | Side-by-side video comparison |
-| `NarratorPiP` | Picture-in-picture presenter overlay |
-| `Envelope` | 3D envelope with opening flap animation |
-| `PointingHand` | Animated hand emoji with slide-in and pulse |
-| `MazeDecoration` | Animated isometric grid decoration for corners |
-| `FilmGrain` | SVG noise overlay for cinematic film texture |
-
 ## Python Tools
 
-Audio and video tools in `tools/`. Config from `_internal/toolkit-registry.json`.
+Audio, video, and image tools in `tools/`. See registry `tools` section for the full catalog with descriptions, options, presets, and env vars. Every tool supports `--help`.
 
 ```bash
 # Setup
 pip install -r tools/requirements.txt
+```
 
-# Voiceover generation (single file - legacy)
-python tools/voiceover.py --script SCRIPT.md --output out.mp3
+### Tool Categories
 
-# Per-scene voiceover generation (recommended)
+| Type | Tools | When to Use |
+|------|-------|-------------|
+| **Project tools** | voiceover, music, sfx, sync_timing | During video creation workflow |
+| **Utility tools** | redub, addmusic, notebooklm_brand, locate_watermark | Quick transformations on existing videos |
+| **Cloud GPU** | image_edit, upscale, dewatermark, sadtalker, qwen3_tts | AI processing via RunPod |
+
+Utility tools work on any video file without requiring a project structure.
+
+### Voiceover Generation
+
+```bash
+# Per-scene generation (recommended)
 python tools/voiceover.py --scene-dir public/audio/scenes --json
 
-# Per-scene with concat for SadTalker narrator
-python tools/voiceover.py --scene-dir public/audio/scenes --concat public/audio/voiceover-concat.mp3
-
 # Using Qwen3-TTS (self-hosted, free alternative to ElevenLabs)
-python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
 python tools/voiceover.py --provider qwen3 --tone warm --scene-dir public/audio/scenes --json
-python tools/voiceover.py --provider qwen3 --brand my-brand --scene-dir public/audio/scenes --json
-python tools/voiceover.py --provider qwen3 --instruct "Speak warmly" --script script.txt --output out.mp3
 
-# Qwen3-TTS standalone tool
+# Single file (legacy)
+python tools/voiceover.py --script SCRIPT.md --output out.mp3
+```
+
+### Timing Sync (after voiceover)
+
+```bash
+python3 tools/sync_timing.py                          # Dry run comparison
+python3 tools/sync_timing.py --apply                  # Update config (1s default padding)
+python3 tools/sync_timing.py --apply --padding 1.5    # Custom padding
+python3 tools/sync_timing.py --voiceover-json vo.json # Use voiceover.py output
+python3 tools/sync_timing.py --json                   # Machine-readable output
+```
+
+### Qwen3-TTS (Standalone)
+
+```bash
 python tools/qwen3_tts.py --text "Hello world" --speaker Ryan --output hello.mp3
 python tools/qwen3_tts.py --text "Hello world" --tone warm --output hello.mp3
 python tools/qwen3_tts.py --text "Hello" --instruct "Speak enthusiastically" --output excited.mp3
 python tools/qwen3_tts.py --text "Hello" --ref-audio sample.wav --ref-text "transcript" --output cloned.mp3
-python tools/qwen3_tts.py --list-voices
-python tools/qwen3_tts.py --list-tones
-python tools/qwen3_tts.py --setup
-
-# Control expressiveness (temperature) and sampling (top_p)
-python tools/qwen3_tts.py --text "Hello" --tone warm --temperature 1.2 --output expressive.mp3
-python tools/qwen3_tts.py --text "Hello" --tone warm --temperature 0.4 --output consistent.mp3
-python tools/voiceover.py --provider qwen3 --tone warm --temperature 0.8 --scene-dir public/audio/scenes --json
-
-# Background music
-python tools/music.py --prompt "Subtle corporate" --duration 120 --output music.mp3
-
-# Sound effects
-python tools/sfx.py --preset whoosh --output sfx.mp3
-python tools/sfx.py --prompt "Thunder crack" --output thunder.mp3
-
-# Redub video with different voice (utility - no project needed)
-python tools/redub.py --input video.mp4 --voice-id VOICE_ID --output dubbed.mp4
-
-# Redub with word-level sync (recommended for different pacing)
-python tools/redub.py --input video.mp4 --voice-id VOICE_ID --sync --output dubbed.mp4
-
-# Add background music to video (utility - no project needed)
-python tools/addmusic.py --input video.mp4 --prompt "Subtle corporate" --output output.mp4
-python tools/addmusic.py --input video.mp4 --music bg.mp3 --music-volume 0.2 --fade-in 2 --fade-out 3 --output output.mp4
+python tools/qwen3_tts.py --list-voices   # 9 speakers: Ryan, Aiden, Vivian, etc.
+python tools/qwen3_tts.py --list-tones    # neutral, warm, professional, excited, etc.
 ```
 
-**SFX Presets:** whoosh, click, chime, error, pop, slide
+Temperature controls expressiveness: `--temperature 1.2` (more expressive) or `--temperature 0.4` (more consistent).
 
 ### AI Image Editing (Cloud GPU)
 
-AI-powered image editing tools using cloud GPU processing via RunPod. These tools require a RunPod account but use pre-built Docker images - no local GPU or building required.
+All Cloud GPU tools require a RunPod account. Use `--setup` to create endpoints automatically. See registry `cloudProviders.runpod.endpoints` for Docker images and env vars.
 
 ```bash
-# General AI editing (Qwen-Image-Edit)
+# RunPod setup (one-time per tool)
+echo "RUNPOD_API_KEY=your_key_here" >> .env
+python tools/image_edit.py --setup
+python tools/upscale.py --setup
+python tools/qwen3_tts.py --setup
+
+# Image editing (Qwen-Image-Edit)
 python tools/image_edit.py --input photo.jpg --prompt "Add sunglasses"
 python tools/image_edit.py --input photo.jpg --style cyberpunk
 python tools/image_edit.py --input photo.jpg --background office
+python tools/image_edit.py --list-presets  # Full preset list
 
-# With quality settings
-python tools/image_edit.py --input photo.jpg --prompt "..." --steps 16 --guidance 3.0
-
-# Multi-image compositing
-python tools/image_edit.py --input person.jpg scene.jpg --prompt "Place person in scene"
-
-# AI upscaling (RealESRGAN)
+# Upscaling (RealESRGAN)
 python tools/upscale.py --input photo.jpg --output photo_4x.png --runpod
-python tools/upscale.py --input photo.jpg --scale 2 --model anime --runpod
-python tools/upscale.py --input photo.jpg --face-enhance --runpod
-
-# List presets
-python tools/image_edit.py --list-presets
+python tools/upscale.py --input photo.jpg --scale 2 --model anime --face-enhance --runpod
 ```
-
-**image_edit presets:**
-- **Background:** office, studio, outdoors, pyramids, beach, city, mountains, space, forest, cafe
-- **Style:** cyberpunk, anime, oil-painting, watercolor, pixel-art, noir, pop-art, sketch, vintage, cinematic
-- **Viewpoint:** front, profile, three-quarter, looking-up, looking-down
-
-**upscale options:**
-- `--scale 2|4` - Upscale factor (default: 4)
-- `--model general|anime|photo` - Model to use
-- `--face-enhance` - Use GFPGAN for face enhancement
-- `--format png|jpg|webp` - Output format
-
-**RunPod setup:**
-```bash
-echo "RUNPOD_API_KEY=your_key_here" >> .env
-python tools/image_edit.py --setup   # For image editing
-python tools/upscale.py --setup      # For upscaling
-```
-
-The `--setup` command creates a RunPod serverless endpoint using pre-built images:
-- `ghcr.io/conalmullan/video-toolkit-qwen-edit:latest`
-- `ghcr.io/conalmullan/video-toolkit-realesrgan:latest`
 
 See `docs/qwen-edit-patterns.md` and `.claude/skills/qwen-edit/` for prompting guidance.
 
-### Utility Tools vs Project Tools
-
-| Type | Tools | When to Use |
-|------|-------|-------------|
-| **Project tools** | voiceover, music, sfx | During video creation workflow |
-| **Utility tools** | redub, addmusic, notebooklm_brand, locate_watermark | Quick transformations on existing videos |
-| **Cloud GPU** | image_edit, upscale, dewatermark, sadtalker, qwen3_tts | AI processing via RunPod (see sections below) |
-
-Utility tools work on any video file without requiring a project structure.
-
-### AI Image Upscaling (Cloud GPU)
-
-The `upscale.py` tool uses Real-ESRGAN to upscale images 2x or 4x with AI enhancement.
-
-**Processing mode:**
-- **RunPod (cloud)** - Works from any machine, ~$0.01-0.05/image
+### Watermark Removal
 
 ```bash
-# Upscale image 4x (default)
-python tools/upscale.py --input photo.jpg --output photo_4x.png --runpod
-
-# Use anime model for illustrations
-python tools/upscale.py --input art.png --output art_4x.png --model anime --runpod
-
-# With face enhancement (GFPGAN)
-python tools/upscale.py --input portrait.jpg --output portrait_4x.png --face-enhance --runpod
-
-# 2x upscale instead of 4x
-python tools/upscale.py --input photo.jpg --output photo_2x.png --scale 2 --runpod
-
-# Output as WebP instead of PNG
-python tools/upscale.py --input photo.jpg --output photo_4x.webp --format webp --runpod
-```
-
-**RunPod setup:**
-```bash
-# 1. Add API key to .env (if not already done)
-echo "RUNPOD_API_KEY=your_key_here" >> .env
-
-# 2. Run automated setup
-python tools/upscale.py --setup
-
-# Done! The endpoint ID is saved to .env as RUNPOD_UPSCALE_ENDPOINT_ID
-```
-
-**Models:**
-- `general` - RealESRGAN_x4plus (default, good for most images)
-- `anime` - RealESRGAN_x4plus_anime_6B (optimized for anime/illustration)
-- `photo` - realesr-general-x4v3 (alternative general model)
-
-**Options:**
-- `--scale 2|4` - Upscale factor (default: 4)
-- `--model general|anime|photo` - Model to use
-- `--face-enhance` - Use GFPGAN for face enhancement
-- `--format png|jpg|webp` - Output format (default: png)
-
-### Watermark Removal (Cloud GPU)
-
-The `dewatermark.py` tool uses AI inpainting (ProPainter) to remove watermarks.
-
-**Two processing modes:**
-- **RunPod (cloud)** - Works from any machine, ~$0.05-0.30/video (recommended)
-- **Local** - Requires NVIDIA GPU with 8GB+ VRAM (optional)
-
-```bash
-# Cloud processing via RunPod (recommended for Mac users)
-# Default outputs at 50% resolution for memory safety
-python tools/dewatermark.py --input video.mp4 --region 1080,660,195,40 --output clean.mp4 --runpod
-
-# Full resolution (may fail on some GPUs due to memory limits)
-python tools/dewatermark.py --input video.mp4 --region 1080,660,195,40 --output clean.mp4 --runpod --resize-ratio 1.0
-
-# Local processing (requires NVIDIA GPU + ProPainter installation)
-python tools/dewatermark.py --input video.mp4 --region 1080,660,195,40 --output clean.mp4
-
-# Check local installation status
-python tools/dewatermark.py --status
-
-# Install ProPainter for local processing (~2GB download)
-python tools/dewatermark.py --install
-```
-
-**RunPod setup (for cloud processing):**
-```bash
-# 1. Add API key to .env
-echo "RUNPOD_API_KEY=your_key_here" >> .env
-
-# 2. Run automated setup
-python tools/dewatermark.py --setup
-
-# Done! The endpoint ID is automatically saved to .env
-```
-
-Uses pre-built image: `ghcr.io/conalmullan/video-toolkit-propainter:latest`
-
-For manual setup or advanced options, see `docs/runpod-setup.md`.
-
-**Hardware requirements (local mode):**
-- **Required:** NVIDIA GPU (8GB+ VRAM)
-- **Not supported:** Apple Silicon, CPU-only (use `--runpod` instead)
-- **Disk:** ~2GB for model weights
-
-**Installation location:** `~/.video-toolkit/propainter/`
-
-### Locating Watermarks
-
-Before removing a watermark, you need to identify its exact coordinates. The `locate_watermark.py` tool helps with this.
-
-**Requires:** ImageMagick (`brew install imagemagick`)
-
-```bash
-# Explore with coordinate grid overlay
+# Locate watermark coordinates
 python tools/locate_watermark.py --input video.mp4 --grid --output-dir ./review/
-
-# Use a preset for common watermarks
 python tools/locate_watermark.py --input video.mp4 --preset notebooklm --verify
 
-# Verify custom region across multiple frames
-python tools/locate_watermark.py --input video.mp4 --region 1100,650,150,50 --verify
-
-# List available presets
-python tools/locate_watermark.py --list-presets
+# Remove watermark (RunPod)
+python tools/dewatermark.py --input video.mp4 --region 1080,660,195,40 --output clean.mp4 --runpod
+python tools/dewatermark.py --setup  # One-time setup
 ```
 
-**Workflow:**
-1. Extract frames with `--grid` to identify watermark position
-2. Note coordinates from the grid overlay
-3. Verify with `--region x,y,w,h --verify` across multiple frames
-4. Use confirmed region with `dewatermark.py`
+**Workflow:** grid overlay → note coordinates → verify with `--region` → remove with dewatermark.
 
-**Presets:** notebooklm, tiktok, sora, stock-br, stock-bl, stock-center
-
-**Options:**
-- `--samples N` - Number of frames to extract (default: 5)
-- `--grid` - Overlay coordinate grid
-- `--mark` - Draw rectangle on frames
-- `--verify` - Mark region across multiple frames for verification
-- `--crop` - Also output cropped watermark regions
-- `--open` - Open output directory in Finder (macOS)
+**Local mode** requires NVIDIA GPU (8GB+ VRAM). Mac users should use `--runpod`.
 
 ### Talking Head Generation (SadTalker)
-
-Generate animated talking head videos from a portrait image + audio file. Use with NarratorPiP component for picture-in-picture presenter overlays.
 
 ```bash
 # Basic usage
@@ -414,9 +202,6 @@ python tools/sadtalker.py \
   --audio voiceover.mp3 \
   --preprocess full --still --expression-scale 0.8 \
   --output narrator.mp4
-
-# More animated style
-python tools/sadtalker.py --image portrait.png --audio speech.mp3 --preset expressive --output animated.mp4
 ```
 
 **Key flags for NarratorPiP:**
@@ -424,137 +209,33 @@ python tools/sadtalker.py --image portrait.png --audio speech.mp3 --preset expre
 - `--still` — Reduces head movement for professional look
 - `--expression-scale 0.8` — Calmer expression (default 1.0)
 
-**Presets:** default, natural, expressive, professional, fullbody
+**Image requirements:** Face 30-70% of frame, front-facing, 16:9 for NarratorPiP, 512px+ recommended.
 
-**Image requirements:**
-- Face should be 30-70% of frame, front-facing
-- For NarratorPiP: use 16:9 aspect ratio image
-- High resolution (512px+ recommended)
-
-**RunPod setup:**
-```bash
-python tools/sadtalker.py --setup
-```
-
-See `docs/sadtalker.md` for detailed options, NarratorPiP workflow, and troubleshooting.
-
-### Qwen3-TTS Speech Generation (Cloud GPU)
-
-Self-hosted TTS via RunPod as an alternative to ElevenLabs. Supports 9 built-in speakers, natural-language emotion control, and voice cloning from reference audio. Apache-2.0 licensed.
-
-```bash
-# Standalone tool
-python tools/qwen3_tts.py --text "Hello world" --speaker Ryan --output hello.mp3
-python tools/qwen3_tts.py --text "Hello world" --tone warm --output hello.mp3
-python tools/qwen3_tts.py --text "Great news!" --instruct "Speak enthusiastically" --output excited.mp3
-python tools/qwen3_tts.py --text "Hello" --ref-audio sample.wav --ref-text "transcript" --output cloned.mp3
-python tools/qwen3_tts.py --list-voices
-python tools/qwen3_tts.py --list-tones
-
-# Control expressiveness (temperature) and sampling (top_p)
-python tools/qwen3_tts.py --text "Hello" --tone warm --temperature 1.2 --output expressive.mp3
-python tools/qwen3_tts.py --text "Hello" --tone warm --temperature 0.4 --output consistent.mp3
-
-# Via voiceover.py (per-scene generation)
-python tools/voiceover.py --provider qwen3 --speaker Ryan --scene-dir public/audio/scenes --json
-python tools/voiceover.py --provider qwen3 --tone warm --scene-dir public/audio/scenes --json
-python tools/voiceover.py --provider qwen3 --instruct "Speak warmly" --script script.txt --output out.mp3
-python tools/voiceover.py --provider qwen3 --tone warm --temperature 0.8 --scene-dir public/audio/scenes --json
-```
-
-**Built-in speakers:** Ryan (EN), Aiden (EN), Vivian (ZH), Serena (ZH), Uncle_Fu (ZH), Dylan (ZH), Eric (ZH), Ono_Anna (JA), Sohee (KO)
-
-**Tone presets:** neutral, warm, professional, excited, calm, serious, storyteller, tutorial (see `--list-tones`)
-
-**Languages:** Auto, English, Chinese, French, German, Italian, Japanese, Korean, Portuguese, Russian, Spanish
-
-**RunPod setup:**
-```bash
-echo "RUNPOD_API_KEY=your_key_here" >> .env
-python tools/qwen3_tts.py --setup
-```
-
-Uses pre-built image: `ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest`
+See `docs/sadtalker.md` for detailed options and troubleshooting.
 
 ### Redub Sync Mode
 
-The `--sync` flag enables word-level time remapping for redubbing. This is essential when the TTS voice speaks at a different pace than the original.
-
-**Why it's needed:**
-- ElevenLabs TTS pacing varies (often starts fast, ends slow)
-- Linear video slowdown can't compensate for variable drift
-- Without sync, audio can drift 3-4+ seconds by the end
-
-**How it works:**
-1. Scribe transcribes original audio with word-level timestamps
-2. TTS generates new audio with character-level timestamps (via `convert_with_timestamps`)
-3. Tool builds segment mapping (default: 15 words per segment)
-4. FFmpeg applies variable speed per segment using filtergraph
-5. Result: each word in video aligns with its TTS counterpart
-
-**Options:**
 ```bash
---sync              # Enable word-level sync
---segment-size N    # Words per segment (default: 15)
+python tools/redub.py --input video.mp4 --voice-id VOICE_ID --sync --output dubbed.mp4
 ```
 
-**When to use:**
-- Redubbing to a voice with significantly different pacing
-- When simple audio replacement produces noticeable drift
-- For professional results where sync matters
+The `--sync` flag enables word-level time remapping — essential when TTS voice pacing differs from original. Without it, audio can drift 3-4+ seconds by the end.
+
+**How it works:** Scribe transcribes original → TTS generates new audio with timestamps → segment mapping (15 words/segment) → FFmpeg variable speed per segment.
 
 ### NotebookLM Branding
 
-The `notebooklm_brand.py` tool handles post-processing of NotebookLM videos with custom branding. This solves a specific challenge: when redubbing NotebookLM videos, the TTS audio may be longer than the safe visual trim point.
-
-**The problem:**
-- NotebookLM videos have a ~2s visual outro (logo + URL card)
-- When you redub with a slower TTS voice, the audio extends beyond the original
-- Simple trimming cuts off the final narration
-- Video and audio tracks need separate handling
-
-**The solution:**
-1. Trim video to remove NotebookLM visuals
-2. Keep full audio (uncut)
-3. Bridge the gap with a freeze frame
-4. Add custom branded outro
+Post-processes NotebookLM videos with custom branding. Solves the problem where redubbed TTS audio extends beyond the safe visual trim point.
 
 ```bash
-# Basic usage
 python tools/notebooklm_brand.py \
     --input video_synced.mp4 \
     --logo assets/logo.png \
     --url "mysite.com" \
-    --output video_final.mp4
-
-# Specify exact trim point (if auto-detection is wrong)
-python tools/notebooklm_brand.py \
-    --input video_synced.mp4 \
-    --logo assets/logo.png \
-    --url "mysite.com" \
-    --trim-at 174.7 \
-    --output video_final.mp4
-
-# Use existing outro card image
-python tools/notebooklm_brand.py \
-    --input video_synced.mp4 \
-    --outro-card assets/outro_card.png \
-    --output video_final.mp4
-
-# Use separate TTS audio file (full narration)
-python tools/notebooklm_brand.py \
-    --input video_synced.mp4 \
-    --audio-file tts_audio.mp3 \
-    --outro-card assets/outro_card.png \
     --output video_final.mp4
 ```
 
-**Options:**
-- `--trim-at`: Seconds where NotebookLM outro begins (auto-detects if not specified)
-- `--audio-file`: Use separate audio file instead of video's audio track
-- `--outro-duration`: Length of branded outro (default: 4s)
-- `--logo-scale`: Logo width in pixels (default: 220)
-- `--text-color`: URL text color as hex (default: 6B8E6B sage green)
+Trims NotebookLM visuals, keeps full audio, bridges with freeze frame, adds branded outro.
 
 ## Video Production Workflow
 
@@ -564,7 +245,7 @@ python tools/notebooklm_brand.py \
 4. **Scene review** - Run `/scene-review` to verify visuals in Remotion Studio
 5. **Design refinement** - Use `/design` or the "Refine" option in scene-review to improve slide visuals
 6. **Generate audio** - Use `/generate-voiceover` for AI narration
-7. **Configure** - Update config file with asset paths and timing
+7. **Sync timing** - Run `python3 tools/sync_timing.py --apply` to update config durations
 8. **Preview** - `npm run studio` in project directory
 9. **Iterate** - Adjust timing, content, styling with Claude Code
 10. **Render** - `npm run render` for final MP4
@@ -602,8 +283,6 @@ Timing is critical. Keep these guidelines in mind:
 
 ### Speaking Rate Tiers
 
-Match pace to content complexity:
-
 | Pace | WPM | Use When |
 |------|-----|----------|
 | Slow | 120-130 | Technical explanations, complex concepts |
@@ -611,8 +290,6 @@ Match pace to content complexity:
 | Fast | 160-180 | Energetic intros, recaps, CTAs |
 
 ### Narration Density by Scene Type
-
-Not every scene needs wall-to-wall narration:
 
 | Scene Type | Duration | Narration Density | Notes |
 |------------|----------|-------------------|-------|
@@ -650,7 +327,7 @@ Sum of scenes + transitions = total video
 ### When to Check Timing
 - **During scene planning** — Budget word counts per scene before writing
 - **After writing script** — Count words per scene, compare to budget
-- **After generating audio** — Compare actual audio duration vs estimate (this is where drift happens)
+- **After generating audio** — Run `sync_timing.py` to compare actual vs estimated
 - **Before rendering** — Ensure `durationInFrames` matches actual audio for each scene
 
 ### TTS Duration Drift (The Real Timing Problem)
@@ -663,11 +340,10 @@ TTS engines do NOT consistently produce 150 WPM output. In practice:
 **The feedback loop after TTS generation:**
 
 1. Generate per-scene audio files
-2. Measure actual duration of each file (`ffprobe -show_entries format=duration`)
-3. Compare actual vs estimated per scene
-4. Update `durationInFrames` in config to match actual audio: `Math.ceil(actualSeconds * 30)`
-5. For demo scenes: recalculate `playbackRate = rawDemoDuration / actualNarrationDuration`
-6. Re-preview in Remotion Studio before rendering
+2. Run `python3 tools/sync_timing.py` to compare actual vs config durations
+3. Run `python3 tools/sync_timing.py --apply` to update config automatically
+4. For demo scenes: recalculate `playbackRate = rawDemoDuration / actualNarrationDuration`
+5. Re-preview in Remotion Studio before rendering
 
 **Common drift patterns and fixes:**
 
@@ -710,11 +386,9 @@ const opacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: 'clamp' 
 
 ## Scene Transitions
 
-The toolkit includes a transitions library at `lib/transitions/` with both official Remotion transitions and custom presentations.
+The toolkit includes a transitions library at `lib/transitions/`. See registry `transitions` section for the full list with options and best-use descriptions.
 
 ### Using TransitionSeries
-
-For scene-to-scene transitions (scenes overlap during transition):
 
 ```tsx
 import { TransitionSeries, linearTiming } from '@remotion/transitions';
@@ -734,46 +408,20 @@ import { glitch, lightLeak, zoomBlur } from '../../../lib/transitions';
 </TransitionSeries>
 ```
 
-### Available Transitions
-
-| Transition | Description | Best For |
-|------------|-------------|----------|
-| `glitch()` | Digital distortion, RGB separation, scan lines | Tech demos, edgy reveals |
-| `rgbSplit()` | Chromatic aberration effect | Modern tech, energetic |
-| `zoomBlur()` | Radial motion blur with scale | CTAs, high-energy moments |
-| `lightLeak()` | Cinematic lens flare, overexposure | Celebrations, film aesthetic |
-| `clockWipe()` | Radial wipe like clock hands | Playful reveals |
-| `pixelate()` | Digital mosaic dissolution | Retro/gaming themes |
-| `checkerboard()` | Grid-based reveal (9 patterns) | Playful, structured reveals |
-| `slide()` | Push scene from direction | Standard transitions |
-| `fade()` | Simple crossfade | Professional, subtle |
-| `wipe()` | Edge reveal | Clean transitions |
-| `flip()` | 3D card flip | Playful, dynamic |
-
 ### Transition Options Examples
 
 ```tsx
-// Tech/cyberpunk feel
-glitch({ intensity: 0.8, slices: 8, rgbShift: true })
-
-// Warm celebration
-lightLeak({ temperature: 'warm', direction: 'right' })
-
-// High energy zoom
-zoomBlur({ direction: 'in', blurAmount: 20 })
-
-// Chromatic aberration
-rgbSplit({ direction: 'diagonal', displacement: 30 })
+glitch({ intensity: 0.8, slices: 8, rgbShift: true })      // Tech/cyberpunk
+lightLeak({ temperature: 'warm', direction: 'right' })       // Warm celebration
+zoomBlur({ direction: 'in', blurAmount: 20 })                // High energy
+rgbSplit({ direction: 'diagonal', displacement: 30 })        // Chromatic aberration
 ```
 
 ### Timing Functions
 
 ```tsx
-// Linear: constant speed
-linearTiming({ durationInFrames: 30 })
-
-// Spring: physics-based with bounce
-springTiming({ config: { damping: 200 }, durationInFrames: 45 })
+linearTiming({ durationInFrames: 30 })                                      // Constant speed
+springTiming({ config: { damping: 200 }, durationInFrames: 45 })            // Physics bounce
 ```
 
 ### Transition Duration Guidelines
@@ -786,40 +434,20 @@ springTiming({ config: { damping: 200 }, durationInFrames: 45 })
 | Glitch effects | 15-25 | Should feel sudden |
 | Light leak | 30-45 | Needs time to sweep |
 
-### Preview Transitions Gallery
-
-To see all transitions in action with Scene A → Scene B demos:
-
-```bash
-cd showcase/transitions
-npm install
-npm run studio
-```
+Preview all transitions: `cd showcase/transitions && npm run studio`
 
 See `lib/transitions/README.md` for full documentation.
 
 ## Design Refinement with frontend-design Skill
 
-The `frontend-design` skill elevates slide visuals from generic to distinctive. It's integrated at multiple levels:
+The `frontend-design` skill elevates slide visuals from generic to distinctive.
 
-### During Scene Review (`/scene-review`)
-When reviewing a slide scene, choose "Refine" to invoke frontend-design for visual improvements. The skill helps with:
-- Color palette and mood
-- Typography and text animations
-- Background effects and atmosphere
-- Motion and timing
-- Visual coherence between scenes
-
-### Focused Sessions (`/design`)
-For deep-dive design work on a specific scene:
-```
-/design title    # Refine the title slide
-/design cta      # Refine the CTA slide
-```
+### Usage
+- **During scene review** (`/scene-review`): Choose "Refine" for visual improvements
+- **Focused sessions** (`/design`): Deep-dive on a specific scene — `/design title`, `/design cta`
 
 ### When to Use
-- Slide scenes (title, problem, solution, stats, cta) that feel generic
-- When something "doesn't feel right" visually
+- Slide scenes that feel generic
 - When building visual contrast between scenes (e.g., calm title → harsh problem)
 - When animations feel too basic or too busy
 
@@ -831,8 +459,6 @@ Consider how visual intensity builds across scenes:
 - **Demo**: Neutral, content-focused
 - **Stats**: Build credibility
 - **CTA**: Climax - maximum visual energy
-
-The frontend-design skill understands this narrative and helps create appropriate contrast and flow.
 
 ## Toolkit vs Project Work
 

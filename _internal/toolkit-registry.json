@@ -1,6 +1,6 @@
 {
   "name": "claude-code-video-toolkit",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "AI-native video production workspace for Claude Code",
   "repository": "https://github.com/digitalsamba/claude-code-video-toolkit",
 
@@ -299,6 +299,16 @@
       "estimatedCost": "$0.005-0.10 per generation",
       "created": "2026-02-19",
       "updated": "2026-02-19"
+    },
+    "sync_timing": {
+      "path": "tools/sync_timing.py",
+      "description": "Sync scene durationSeconds in Remotion config with actual audio durations",
+      "usage": "python tools/sync_timing.py --apply",
+      "status": "stable",
+      "category": "project",
+      "requires": "ffprobe (from ffmpeg)",
+      "created": "2026-02-24",
+      "updated": "2026-02-24"
     }
   },
 
