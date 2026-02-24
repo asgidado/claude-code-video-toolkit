@@ -6,10 +6,10 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
-## 2026-02-23 (v0.9.4)
+## 2026-02-24 (v0.10.0)
 
 ### Added
-- **Qwen3-TTS integration** — Self-hosted TTS via RunPod as cheaper alternative to ElevenLabs
+- **Qwen3-TTS integration** — Self-hosted TTS via RunPod as free alternative to ElevenLabs
   - `tools/qwen3_tts.py` standalone CLI with 9 speakers, tone presets, voice cloning
   - `voiceover.py --provider qwen3` for per-scene generation
   - Docker image: `ghcr.io/conalmullan/video-toolkit-qwen3-tts:latest`
@@ -17,10 +17,19 @@ All notable changes to claude-code-video-toolkit.
 - **`/voice-clone` command** — Record, test, and save a cloned voice to a brand profile
 - **`sprint-review-v2` template** — Composable scene-based architecture for sprint reviews
 - **`FilmGrain` component** — SVG noise overlay for cinematic film texture
-- **Author's note in README** — Project philosophy, getting started guidance, free Docker images list
+- **`hello-world` example** — Minimal 25s video, zero config, renders in 2 minutes
+- **`runpod` skill** — Cloud GPU setup, Docker images, endpoint management, troubleshooting
+- **Remotion skills sync update** — 6 new upstream rules (audio-visualization, ffmpeg, light-leaks, subtitles, transparent-videos, voiceover)
+
+### Improved
+- **Onboarding & developer experience** — All API keys now optional, videos render with just Node.js
+  - `.env.example` reorganized with sections, all keys commented out by default
+  - README and getting-started.md restructured with "Try It Now" quick start
+  - All Python tools show actionable guidance when API keys are missing (add key, use alternative, or skip)
+  - `voiceover.py` catches missing `elevenlabs` pip package with helpful message pointing to Qwen3-TTS
 
 ### Changed
-- Updated README with Qwen3-TTS in tools section, Docker images table, voice-clone command
+- Updated README with prerequisites table, Qwen3-TTS, Docker images, voice-clone command
 - Updated CLAUDE.md with FilmGrain component and checkerboard transition
 - Updated roadmap metrics and skill status table
 - Fixed cho-oyu demo link; added cortina sprint to demos table

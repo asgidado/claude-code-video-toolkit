@@ -176,6 +176,7 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 | playwright-recording | beta | Browser demo capture |
 | frontend-design | stable | Visual design refinement |
 | qwen-edit | stable | AI image editing prompting patterns |
+| runpod | stable | Cloud GPU setup, Docker images, endpoint management |
 
 ---
 
@@ -202,11 +203,11 @@ An open-source, AI-native video production workspace for Claude Code, featuring:
 | Templates | 3 | sprint-review, sprint-review-v2, product-demo |
 | Brands | 2 | default, digital-samba |
 | Skills | 8 | 6 stable, 2 beta |
-| Tools | 13 | voiceover, music, sfx, redub, addmusic, dewatermark, locate_watermark, notebooklm_brand, image_edit, upscale, sadtalker, qwen3_tts, redub |
+| Tools | 12 | voiceover, music, sfx, redub, addmusic, dewatermark, locate_watermark, notebooklm_brand, image_edit, upscale, sadtalker, qwen3_tts |
 | Commands | 12 | video, brand, template, skills, contribute, record-demo, generate-voiceover, scene-review, design, versions, redub, voice-clone |
 | Components | 11 | AnimatedBackground, SlideTransition, Label, Vignette, FilmGrain, LogoWatermark, SplitScreen, NarratorPiP, Envelope, PointingHand, MazeDecoration |
 | Transitions | 7 | glitch, rgbSplit, zoomBlur, lightLeak, clockWipe, pixelate, checkerboard |
-| Examples | 2 | digital-samba-skill-demo, sprint-review-cho-oyu |
+| Examples | 3 | hello-world, digital-samba-skill-demo, sprint-review-cho-oyu |
 
 ---
 
