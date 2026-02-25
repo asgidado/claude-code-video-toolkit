@@ -6,6 +6,28 @@ All notable changes to claude-code-video-toolkit.
 
 ---
 
+## 2026-02-25 (v0.10.1)
+
+### Added
+- **`tools/sync_timing.py`** — Audio-to-config timing sync tool
+  - Measures actual per-scene audio durations via ffprobe
+  - Auto-detects config file and template type (sprint-review v1/v2, product-demo)
+  - 3-pass audio-to-scene matching: `audioFile` field → index → name
+  - Comparison table with delta indicators; skips changes < 0.3s
+  - `--apply` updates `durationSeconds` in-place (creates `.bak` backup)
+  - `--voiceover-json` accepts voiceover.py output directly
+  - Suggests `playbackRate` adjustments for demo scenes
+
+### Changed
+- **CLAUDE.md slimmed 44%** (861 → 480 lines)
+  - Removed catalog data duplicated in `toolkit-registry.json` (skills, commands, components, transitions, presets, Docker images, duplicate CLI examples)
+  - Added cross-references to registry for structured data
+  - All workflow guidance, timing knowledge, code patterns, and tool-specific gotchas retained
+- Integrated `sync_timing.py` into Video Production Workflow (step 7) and TTS drift feedback loop
+- Updated toolkit-registry.json with `sync_timing` tool entry
+
+---
+
 ## 2026-02-24 (v0.10.0)
 
 ### Added
