@@ -1,0 +1,22 @@
+{
+  "name": "science-short",
+  "version": "1.0.0",
+  "description": "Short-form science explainer — animated SVG diagrams, step-by-step mechanisms, concept reveals",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render ScienceShort out/science-short.mp4",
+    "render:preview": "remotion render ScienceShort out/preview.mp4 --scale=0.5"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.425",
+    "@remotion/google-fonts": "4.0.425",
+    "@remotion/transitions": "4.0.425",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "4.0.425"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}
