@@ -1,0 +1,55 @@
+{
+  "name": "Soma",
+  "description": "Soma brand — dark teal and gold on deep navy",
+  "version": "1.0.0",
+
+  "colors": {
+    "primary": "#00C8C8",
+    "primaryLight": "#33D6D6",
+    "primaryDark": "#009A9A",
+    "accent": "#F5A623",
+    "accentLight": "#F7BB55",
+    "textDark": "#E2E8F0",
+    "textMedium": "#94A3B8",
+    "textLight": "#64748B",
+    "bgLight": "#ffffff",
+    "bgDark": "#0A0E1A",
+    "bgMid": "#111827",
+    "bgOverlay": "rgba(10, 14, 26, 0.95)",
+    "divider": "rgba(255, 255, 255, 0.1)",
+    "shadow": "rgba(0, 0, 0, 0.4)"
+  },
+
+  "fonts": {
+    "primary": "\"Space Grotesk\", system-ui, -apple-system, sans-serif",
+    "mono": "ui-monospace, SFMono-Regular, \"SF Mono\", Menlo, monospace"
+  },
+
+  "spacing": {
+    "xs": 8,
+    "sm": 16,
+    "md": 24,
+    "lg": 48,
+    "xl": 80,
+    "xxl": 120
+  },
+
+  "borderRadius": {
+    "sm": 6,
+    "md": 10,
+    "lg": 16
+  },
+
+  "typography": {
+    "h1": { "size": 88, "weight": 700 },
+    "h2": { "size": 72, "weight": 700 },
+    "h3": { "size": 48, "weight": 600 },
+    "body": { "size": 44, "weight": 400 },
+    "label": { "size": 34, "weight": 600, "letterSpacing": 2 }
+  },
+
+  "assets": {
+    "logo": "assets/logo.png",
+    "logoLight": "assets/logo-light.png"
+  }
+}

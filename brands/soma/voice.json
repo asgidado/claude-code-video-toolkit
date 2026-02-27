@@ -1,0 +1,12 @@
+{
+  "provider": "elevenlabs",
+  "voiceId": "QTHyAtiufDKvbfr7HveX",
+  "description": "Soma brand voice",
+  "settings": {
+    "stability": 0.75,
+    "similarityBoost": 0.9,
+    "style": 0.2,
+    "useSpeakerBoost": true
+  },
+  "model": "eleven_multilingual_v2"
+}
